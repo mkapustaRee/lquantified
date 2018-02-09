@@ -36,4 +36,4 @@ weight = 5
 
 # Biography
 
-Learned a lot as private banker during GFC, went to study real estate investment and becomed commercial research & strategy analyst. Since 2016 infected by the R bug. I enjoy running, thai-boxing, cooking and music. 
+Learned a lot as a private banker during GFC, went to study real estate investment and become commercial research & strategy analyst. Since 2016 infected by the R bug. I enjoy running, Thai-boxing, cooking, and music.
