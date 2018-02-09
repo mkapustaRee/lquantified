@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.31.1" />
+  <meta name="author" content="Michal Kapusta">
+  <meta name="description" content="Real Estate Research &amp; Investments at Barings. I code in R in order to better understand property locations, find trends &amp; patterns in data.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/2017-12_analysis_of_prices_in_bratislava/">
+
+  
+  
+
+
+  
+
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.1/css/academicons.min.css" integrity="sha512-NThgw3XKQ1absAahW6to7Ey42uycrVvfNfyjqcFNgCmOCQ5AR4AO0SiXrN+8ZtYeappp56lk1WtvjVmEa+VR6A==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Playfair&#43;Display:400,700%7cFauna&#43;One">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Location quantified ">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Location quantified ">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/2017-12_analysis_of_prices_in_bratislava/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@MKapustaREE">
+  <meta property="twitter:creator" content="@MKapustaREE">
+  
+  <meta property="og:site_name" content="Location quantified ">
+  <meta property="og:url" content="/post/2017-12_analysis_of_prices_in_bratislava/">
+  <meta property="og:title" content="Analysis of Appartment Prices in Slovakian capital - Bratislava | Location quantified ">
+  <meta property="og:description" content="">
+  <meta property="og:locale" content="en-us">
+  
+  
+  
+  
+
+  
+
+  <title>Analysis of Appartment Prices in Slovakian capital - Bratislava | Location quantified </title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/"><img src="/img/dark_logo_transparent.svg" alt="Location quantified "></a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Personal</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <div class="article-inner">
+      <h1 itemprop="name">Analysis of Appartment Prices in Slovakian capital - Bratislava</h1>
+
+      
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    
+        Last updated on
+    
+    <time datetime="0001-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Jan 1, 0001
+    </time>
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    6 min read
+  </span>
+  
+
+  
+  
+
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Analysis%20of%20Appartment%20Prices%20in%20Slovakian%20capital%20-%20Bratislava&amp;url=%2fpost%2f2017-12_analysis_of_prices_in_bratislava%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2f2017-12_analysis_of_prices_in_bratislava%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2f2017-12_analysis_of_prices_in_bratislava%2f&amp;title=Analysis%20of%20Appartment%20Prices%20in%20Slovakian%20capital%20-%20Bratislava"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2f2017-12_analysis_of_prices_in_bratislava%2f&amp;title=Analysis%20of%20Appartment%20Prices%20in%20Slovakian%20capital%20-%20Bratislava"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Analysis%20of%20Appartment%20Prices%20in%20Slovakian%20capital%20-%20Bratislava&amp;body=%2fpost%2f2017-12_analysis_of_prices_in_bratislava%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+      <div class="article-style" itemprop="articleBody">
+        <div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This technical article is my personal attempt to showcase advanced techniques of R programming language and typical real life use-case of finding mispriced appartments in Slovak city - Bratislava. This comes partly from my frustration as the listing websites are not allowing deeper analysis and not particulary informative in terms of what is the market doing.</p>
+<p>This article is written using typical data analyst <strong>circle-of-life</strong> where all the works starts with <strong>data acquisition</strong> of data followed by most time-consuming part of <strong>data cleaning</strong>. Once data is cleaned the modeling and communicating part are lightingly easy to do once <strong>tidy</strong> dataset is prepared and ready to be used by pre-packaged R functions (like lm etc.)</p>
+<p>In this data analysis is was using following R packages:</p>
+<ul>
+<li>Rvest<br />
+</li>
+<li>XML<br />
+</li>
+<li>tidyverse<br />
+</li>
+<li>stringr</li>
+<li>rebus</li>
+</ul>
+</div>
+<div id="data-acquisition" class="section level2">
+<h2>Data acquisition</h2>
+<p>Recent advancement of R programming language in terms of readibility (%in% pipe operator) &amp; framework (tidyverse) is helping beginner users (like myself) be able to acomplish project like this one.</p>
+<p>Since the data i need in isn’t publicly availible (often the case and challenge for the data analyst) it is needed that i code a web-scraper that will gather the needed data. This is done using <strong>rvest</strong>, <strong>xml</strong> packages.</p>
+<p>The webpage www.topreality.sk seems to be a good example of a listing ads as it contains in the specific ad enough details in a semi-structured way. The web-scraping will be done in two steps. First we set all filters in the website itself to recieve the url that contains all the flats. This will generate overview site that shows the links to specific flats as well as some info (location, price, description, number of rooms, etc.). This is important as the overview sit itself doesnt give us enough information to build good prediction model. The more detailed and valuable information (like Construction Material, Floor or if is has storage room) is hidden inside the specific ad itself.</p>
+<pre class="r"><code>plain_url &lt;- &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-2.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;</code></pre>
+<p>This url seems bit intimidating at first but closer look reveals that the displayed ads are stored in the website that are only different in number followed by .html.</p>
+<p>This can be exposed and using the str_c function we create a 1 to 100 url websites that contain the specific url to the ads.</p>
+<pre class="r"><code>url &lt;- str_c(&quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-&quot;,1:100,&quot;.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;)
+
+head(url)</code></pre>
+<pre><code>## [1] &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-1.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;
+## [2] &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-2.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;
+## [3] &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-3.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;
+## [4] &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-4.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;
+## [5] &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-5.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;
+## [6] &quot;https://www.topreality.sk/vyhladavanie-nehnutelnosti-6.html?type%5B0%5D=108&amp;type%5B1%5D=102&amp;type%5B2%5D=103&amp;type%5B3%5D=104&amp;type%5B4%5D=105&amp;form=1&amp;obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&amp;n_search=search&amp;gpsPolygon=&amp;searchType=string&quot;</code></pre>
+<p>This could be little intimidating to look at first but what is changing is the numeric counter and the rest is the same parts of the url.</p>
+<pre class="r"><code>store_url &lt;- function(put_url) {
+        url_saved &lt;-  put_url %&gt;%
+                read_html() %&gt;%
+                html_nodes(&quot;h2&quot;) %&gt;%
+                html_nodes(&quot;a&quot;)%&gt;%
+                html_attr(&quot;href&quot;)
+        
+        values &lt;- c(url_saved) %&gt;% as.data.frame()
+        
+        return(values)
+        
+}
+
+
+df_results_bind &lt;- read_csv(&quot;/Users/Michal/Desktop/R Projects/R projects/R Webscrape/_scraped data/topreality/topreality_results [2017-08-15]&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   detaily2 = col_character(),
+##   detaily1 = col_character(),
+##   desc = col_character(),
+##   id = col_character()
+## )</code></pre>
+</div>
+<div id="data-cleaning" class="section level2">
+<h2>Data cleaning</h2>
+<p>After we have suscessfully obtained the detailed information to every url in the raw database it is time to apply some of the techniques availible to filter errors &amp; inconsistent data.</p>
+<p>First we need to take a look at the data</p>
+<pre class="r"><code>str(df_results_bind)</code></pre>
+<pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    72742 obs. of  4 variables:
+##  $ detaily2: chr  &quot;Cena&quot; &quot;Cena za m2&quot; &quot;Hypotéka&quot; &quot;Lokalita&quot; ...
+##  $ detaily1: chr  &quot;159 000,00 EUR&quot; &quot;2 271,43 EUR/m2&quot; &quot;od 511 EUR/mesiacChcem porovnanie&quot; &quot;Nové Mesto&quot; ...
+##  $ desc    : chr  &quot;Volajte 0917 346296.\r\nPredáme veľmi pekný 4-izbový byt na Račianskej ul.. Byt má rozlohu 70 m2 + 11 m2 lodžia&quot;| __truncated__ &quot;Volajte 0917 346296.\r\nPredáme veľmi pekný 4-izbový byt na Račianskej ul.. Byt má rozlohu 70 m2 + 11 m2 lodžia&quot;| __truncated__ &quot;Volajte 0917 346296.\r\nPredáme veľmi pekný 4-izbový byt na Račianskej ul.. Byt má rozlohu 70 m2 + 11 m2 lodžia&quot;| __truncated__ &quot;Volajte 0917 346296.\r\nPredáme veľmi pekný 4-izbový byt na Račianskej ul.. Byt má rozlohu 70 m2 + 11 m2 lodžia&quot;| __truncated__ ...
+##  $ id      : chr  &quot;https://www.topreality.sk/byt-blizko-centra-samostatne-izby-velikanska-lodzia-ihned-volny-r6090539.html&quot; &quot;https://www.topreality.sk/byt-blizko-centra-samostatne-izby-velikanska-lodzia-ihned-volny-r6090539.html&quot; &quot;https://www.topreality.sk/byt-blizko-centra-samostatne-izby-velikanska-lodzia-ihned-volny-r6090539.html&quot; &quot;https://www.topreality.sk/byt-blizko-centra-samostatne-izby-velikanska-lodzia-ihned-volny-r6090539.html&quot; ...
+##  - attr(*, &quot;spec&quot;)=List of 2
+##   ..$ cols   :List of 4
+##   .. ..$ detaily2: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ detaily1: list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ desc    : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   .. ..$ id      : list()
+##   .. .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_character&quot; &quot;collector&quot;
+##   ..$ default: list()
+##   .. ..- attr(*, &quot;class&quot;)= chr  &quot;collector_guess&quot; &quot;collector&quot;
+##   ..- attr(*, &quot;class&quot;)= chr &quot;col_spec&quot;</code></pre>
+<p>As we can see the data is stored in four separate columns with detaily2 containing name of the categories, detail1 category values, description contains ad written summary provided by the listing agent and id with url link to the specific ad.</p>
+<p>For futher analysis the first two collumns contains desired information for building regression models, but also contain several problems. Some of the problems are inconsistent labeling, duplicate row records (the website assigns into columns price variable inconsistently as price expresed as numeric value as well as the Category of flat)</p>
+<pre class="r"><code>df_results_bind$detaily2 &lt;- str_replace(df_results_bind$detaily2, pattern = &quot;Cena vrátane provízie&quot;,replacement = &quot;Cena&quot;)
+df_results_bind$detaily2 &lt;- str_replace(df_results_bind$detaily2, pattern = &quot;Cena bez provízie&quot;,replacement = &quot;Cena&quot;)
+
+df_filter &lt;- c(&quot;Kategória&quot;,&quot;Cena&quot;,&quot;Lokalita&quot;,&quot;Ulica&quot;,&quot;Úžitková plocha&quot;,&quot;Poschodie&quot;,&quot;Výťah&quot;,&quot;Balkón / loggia&quot;,&quot;Pivnica&quot;,&quot;Stav nehnuteľnosti:&quot;,&quot;Materiál&quot;,&quot;Stav&quot;,&quot;Zastavaná plocha&quot;,&quot;Identifikačné číslo:&quot;)
+df_results_bind &lt;- df_results_bind %&gt;% filter(detaily2 %in% df_filter)
+df_results_wide &lt;- df_results_bind 
+
+df_results_wide$flt &lt;- str_c(df_results_wide$detaily2,df_results_wide$id) 
+df_results_wide &lt;- df_results_wide %&gt;% distinct(flt, .keep_all = T)
+
+df_results_wide &lt;- df_results_wide %&gt;% select(id,detaily2,detaily1) %&gt;% spread(detaily2,detaily1)</code></pre>
+<p>After we have cleaned the data some of the collumn variables needs to be relableled to be consistent across the whole database.</p>
+<p>Steps summarized: <strong>take only data containing information about <code>Balkón / loggia</code> (including Balcony) </strong></p>
+<pre class="r"><code>df_ads &lt;- df_results_wide %&gt;% filter(`Balkón / loggia` %in% c(&quot;Áno&quot;,&quot;Nie&quot;))
+
+# Stav
+df_ads$Stav &lt;- ifelse(df_ads$`Stav nehnuteľnosti:` %in% &quot;Novostavba&quot;,
+                                           &quot;kompletná rekonštrukcia&quot;,
+                                           as.character(df_ads$Stav))
+
+df_ads &lt;- df_ads %&gt;%
+        drop_na(Cena,Lokalita,`Úžitková plocha`,Ulica,Stav)
+
+df_ads &lt;- filter(df_ads, Kategória %in% c(&quot;2 izbový byt / Predaj&quot;,
+                                          &quot;Dvojgarsónka / Predaj&quot;,
+                                          &quot;1 izbový byt / Predaj&quot;,
+                                          &quot;4 izbový byt / Predaj&quot;,
+                                          &quot;3 izbový byt / Predaj&quot;))
+
+# Material
+df_ads$Materiál &lt;- ifelse(df_ads$Materiál == is.na(NA),
+                          &quot;panel&quot;,
+                          as.character(df_ads$Materiál))
+
+# Cena
+df_ads$Cena &lt;- df_ads$Cena %&gt;% str_replace_all(&quot;EUR&quot;, &quot;&quot;) %&gt;%
+        str_replace_all(rebus::space(), &quot;&quot;) %&gt;%
+        str_replace_all(&quot;,&quot;, &quot;.&quot;) %&gt;% 
+        as.numeric(df_ads$Cena)
+
+# Plocha
+
+df_ads$`Úžitková plocha` &lt;- df_ads$`Úžitková plocha` %&gt;%
+        str_replace_all(&quot; m2&quot;, &quot;&quot;)  %&gt;% as.numeric()
+
+# Kategoria
+df_ads$Kategória &lt;- df_ads$Kategória %&gt;%
+        str_replace_all(&quot;izbový byt / Predaj&quot;, &quot;&quot;) %&gt;%
+        str_replace_all(&quot;Dvojgarsónka/Predaj&quot;, &quot;1.5&quot;) %&gt;%
+        str_replace_all(rebus::space(), &quot;&quot;) %&gt;% 
+        as.factor()
+
+# Lokalita
+
+df_ads$Lokalita &lt;- df_ads$Lokalita %&gt;% as.factor()
+
+regex_pat2 &lt;- group(&quot;, časť&quot; %R% space()  %R% one_or_more(rebus::WRD))
+df_ads$Lokalita  &lt;- df_ads$Lokalita  %&gt;%
+                        str_replace_all(regex_pat2, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; / Kuchajda&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; hony&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; diely&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; háj&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; jarkami&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; kolónia&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; dolina&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; Stred&quot;, &quot;&quot;) %&gt;% 
+                        str_replace_all(&quot; hrdlo&quot;, &quot;&quot;) %&gt;% 
+                        as.factor()</code></pre>
+<pre class="r"><code># Poschodie
+df_poschodie &lt;- df_ads$Poschodie %&gt;%
+        str_split(&quot;/&quot;) %&gt;%
+        map(str_trim) %&gt;%
+        do.call(args = .,rbind.data.frame)
+colnames(df_poschodie) &lt;- c(&quot;Poschodie&quot;,&quot;Bytovka&quot;) 
+df_poschodie &lt;- map_df(df_poschodie, as.numeric)
+df_poschodie$Poschodie_feat &lt;- ifelse(df_poschodie$Poschodie == 1,&quot;prizemie&quot;,
+                                      ifelse(df_poschodie$Poschodie == df_poschodie$Bytovka, &quot;strop&quot;,&quot;ine&quot;))
+
+df_ads$Poschodie &lt;- df_poschodie$Poschodie_feat %&gt;% as.factor()</code></pre>
+<pre class="r"><code># Úžitková plocha
+df_ads &lt;- df_ads %&gt;%
+        group_by(Kategória) %&gt;%
+        mutate(Size_mean = mean(`Úžitková plocha`, na.rm = T)) %&gt;% 
+        ungroup() %&gt;%
+        mutate(Size_extra = `Úžitková plocha`-Size_mean,
+                             Size_bin = ntile(Size_extra,5))</code></pre>
+</div>
+<div id="data-exploration" class="section level2">
+<h2>Data exploration</h2>
+</div>
+<div id="data-model" class="section level2">
+<h2>Data model</h2>
+</div>
+<div id="data-exploration-1" class="section level2">
+<h2>Data exploration</h2>
+</div>
+
+      </div>
+
+      
+
+    </div>
+  </div>
+
+</article>
+
+
+
+
+
+
+<div class="article-container">
+  
+
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2017 Michal Kapusta &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+
+  </body>
+</html>
+

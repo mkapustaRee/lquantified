@@ -1,0 +1,223 @@
+---
+title: "Analysis of Appartment Prices in Slovakian capital - Bratislava"
+author: "Michal Kapusta"
+output:
+  html_document:
+    theme: journal
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(XML)
+library(rebus)
+library(tidyverse)
+library(stringr)
+library(rvest)
+Sys.setlocale(category = "LC_ALL",locale ="de_DE")
+
+
+```
+
+## Introduction 
+
+This technical article is my personal attempt to showcase advanced techniques of R programming language and typical real life use-case of finding mispriced appartments in Slovak city - Bratislava. This comes partly from my frustration as the listing websites are not allowing deeper analysis and not particulary informative in terms of what is the market doing. 
+
+This article is written using typical data analyst **circle-of-life** where all the works starts with **data acquisition** of data followed by most time-consuming part of **data cleaning**. Once data is cleaned the modeling  and communicating part are lightingly easy to do once **tidy** dataset is prepared and ready to be used by pre-packaged R functions (like lm etc.)
+
+
+In this data analysis is was using following R packages: 
+
+* Rvest  
+* XML  
+* tidyverse  
+* stringr 
+* rebus
+
+## Data acquisition 
+Recent advancement of R programming language in terms of readibility (%in% pipe operator) & framework (tidyverse) is helping beginner users (like myself) be able to acomplish project like this one. 
+
+Since the data i need in isn't publicly availible (often the case and challenge for the data analyst) it is needed that i code a web-scraper that will gather the needed data. This is done using **rvest**, **xml** packages. 
+
+The webpage www.topreality.sk seems to be a good example of a listing ads as it contains in the specific ad enough details in a semi-structured way. The web-scraping will be done in two steps. First we set all filters in the website itself to recieve the url that contains all the flats. This will generate overview site that shows the links to specific flats as well as some info (location, price, description, number of rooms, etc.). This is important as the overview sit itself doesnt give us enough information to build good prediction model. The more detailed and valuable information (like Construction Material, Floor or if is has storage room) is hidden inside the specific ad itself.   
+
+
+```{r show url}
+plain_url <- "https://www.topreality.sk/vyhladavanie-nehnutelnosti-2.html?type%5B0%5D=108&type%5B1%5D=102&type%5B2%5D=103&type%5B3%5D=104&type%5B4%5D=105&form=1&obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&n_search=search&gpsPolygon=&searchType=string"
+
+```
+
+This url seems bit intimidating at first but closer look reveals that the displayed ads are stored in the website that are only different in number followed by .html. 
+
+This can be exposed and using the str_c function we create a 1 to 100 url websites that contain the specific url to the ads.  
+
+```{r create urls}
+url <- str_c("https://www.topreality.sk/vyhladavanie-nehnutelnosti-",1:100,".html?type%5B0%5D=108&type%5B1%5D=102&type%5B2%5D=103&type%5B3%5D=104&type%5B4%5D=105&form=1&obec=2%2C4%2C5%2C6%2C8%2C9%2C10%2C12%2C13%2C14%2C15%2C16%2C17%2C19%2C20%2C21%2C22&n_search=search&gpsPolygon=&searchType=string")
+
+head(url)
+
+```
+
+This could be little intimidating to look at first but what is changing is the numeric counter and the rest is the same parts of the url.  
+
+```{r build url scraper}
+store_url <- function(put_url) {
+        url_saved <-  put_url %>%
+                read_html() %>%
+                html_nodes("h2") %>%
+                html_nodes("a")%>%
+                html_attr("href")
+        
+        values <- c(url_saved) %>% as.data.frame()
+        
+        return(values)
+        
+}
+
+
+df_results_bind <- read_csv("/Users/Michal/Desktop/R Projects/R projects/R Webscrape/_scraped data/topreality/topreality_results [2017-08-15]")
+
+
+```
+
+
+
+## Data cleaning 
+
+After we have suscessfully obtained the detailed information to every url in the raw database it is time to apply some of the techniques availible to filter errors & inconsistent data. 
+
+First we need to take a look at the data 
+
+```{r load raw ad data}
+
+str(df_results_bind)
+
+```
+
+As we can see the data is stored in four separate columns with detaily2 containing name of the categories, detail1 category values, description contains ad written summary provided by the listing agent and id with url link to the specific ad. 
+
+For futher analysis the first two collumns contains desired information for building regression models, but also contain several problems. Some of the problems are inconsistent labeling, duplicate row records (the website assigns into columns price variable inconsistently as price expresed as numeric value as well as the Category of flat)
+ 
+```{r data cleaning}
+
+df_results_bind$detaily2 <- str_replace(df_results_bind$detaily2, pattern = "Cena vrátane provízie",replacement = "Cena")
+df_results_bind$detaily2 <- str_replace(df_results_bind$detaily2, pattern = "Cena bez provízie",replacement = "Cena")
+
+df_filter <- c("Kategória","Cena","Lokalita","Ulica","Úžitková plocha","Poschodie","Výťah","Balkón / loggia","Pivnica","Stav nehnuteľnosti:","Materiál","Stav","Zastavaná plocha","Identifikačné číslo:")
+df_results_bind <- df_results_bind %>% filter(detaily2 %in% df_filter)
+df_results_wide <- df_results_bind 
+
+df_results_wide$flt <- str_c(df_results_wide$detaily2,df_results_wide$id) 
+df_results_wide <- df_results_wide %>% distinct(flt, .keep_all = T)
+
+df_results_wide <- df_results_wide %>% select(id,detaily2,detaily1) %>% spread(detaily2,detaily1)
+
+```
+
+After we have cleaned the data some of the collumn variables needs to be relableled to be consistent across the whole database. 
+
+Steps summarized:
+**take only data containing information about `Balkón / loggia` (including Balcony) 
+**
+
+```{r}
+df_ads <- df_results_wide %>% filter(`Balkón / loggia` %in% c("Áno","Nie"))
+
+# Stav
+df_ads$Stav <- ifelse(df_ads$`Stav nehnuteľnosti:` %in% "Novostavba",
+                                           "kompletná rekonštrukcia",
+                                           as.character(df_ads$Stav))
+
+df_ads <- df_ads %>%
+        drop_na(Cena,Lokalita,`Úžitková plocha`,Ulica,Stav)
+
+df_ads <- filter(df_ads, Kategória %in% c("2 izbový byt / Predaj",
+                                          "Dvojgarsónka / Predaj",
+                                          "1 izbový byt / Predaj",
+                                          "4 izbový byt / Predaj",
+                                          "3 izbový byt / Predaj"))
+
+# Material
+df_ads$Materiál <- ifelse(df_ads$Materiál == is.na(NA),
+                          "panel",
+                          as.character(df_ads$Materiál))
+
+# Cena
+df_ads$Cena <- df_ads$Cena %>% str_replace_all("EUR", "") %>%
+        str_replace_all(rebus::space(), "") %>%
+        str_replace_all(",", ".") %>% 
+        as.numeric(df_ads$Cena)
+
+# Plocha
+
+df_ads$`Úžitková plocha` <- df_ads$`Úžitková plocha` %>%
+        str_replace_all(" m2", "")  %>% as.numeric()
+
+# Kategoria
+df_ads$Kategória <- df_ads$Kategória %>%
+        str_replace_all("izbový byt / Predaj", "") %>%
+        str_replace_all("Dvojgarsónka/Predaj", "1.5") %>%
+        str_replace_all(rebus::space(), "") %>% 
+        as.factor()
+
+# Lokalita
+
+df_ads$Lokalita <- df_ads$Lokalita %>% as.factor()
+
+regex_pat2 <- group(", časť" %R% space()  %R% one_or_more(rebus::WRD))
+df_ads$Lokalita  <- df_ads$Lokalita  %>%
+                        str_replace_all(regex_pat2, "") %>% 
+                        str_replace_all(" / Kuchajda", "") %>% 
+                        str_replace_all(" hony", "") %>% 
+                        str_replace_all(" diely", "") %>% 
+                        str_replace_all(" háj", "") %>% 
+                        str_replace_all(" jarkami", "") %>% 
+                        str_replace_all(" kolónia", "") %>% 
+                        str_replace_all(" dolina", "") %>% 
+                        str_replace_all(" Stred", "") %>% 
+                        str_replace_all(" hrdlo", "") %>% 
+                        as.factor()
+
+```
+
+
+
+```{r feat. eng I}
+
+# Poschodie
+df_poschodie <- df_ads$Poschodie %>%
+        str_split("/") %>%
+        map(str_trim) %>%
+        do.call(args = .,rbind.data.frame)
+colnames(df_poschodie) <- c("Poschodie","Bytovka") 
+df_poschodie <- map_df(df_poschodie, as.numeric)
+df_poschodie$Poschodie_feat <- ifelse(df_poschodie$Poschodie == 1,"prizemie",
+                                      ifelse(df_poschodie$Poschodie == df_poschodie$Bytovka, "strop","ine"))
+
+df_ads$Poschodie <- df_poschodie$Poschodie_feat %>% as.factor()
+
+
+
+```
+
+
+```{r feat. eng II}
+# Úžitková plocha
+df_ads <- df_ads %>%
+        group_by(Kategória) %>%
+        mutate(Size_mean = mean(`Úžitková plocha`, na.rm = T)) %>% 
+        ungroup() %>%
+        mutate(Size_extra = `Úžitková plocha`-Size_mean,
+                             Size_bin = ntile(Size_extra,5))
+```
+
+
+## Data exploration 
+
+
+## Data model 
+
+
+## Data exploration 
+
+
