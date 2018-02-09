@@ -40,7 +40,7 @@ defaultContentLanguageInSubdir = false
 
   # Your details.
   name = "Michal Kapusta"
-  role = "Real Estate Research & Investments at Barings. I code in R in order to better understand property locations, find trends & patterns in data."
+  role = "Real Estate Research & Investments at Barings."
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
