@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/investing_in_art/</loc>
+      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/</loc>
       <lastmod>2017-01-01T00:00:00+01:00</lastmod>
     </url>
@@ -33,6 +42,16 @@
     
     <url>
     
+      <loc>/tags/plot/</loc>
+      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication_types/</loc>
       <priority>0</priority>
     </url>
@@ -42,7 +61,38 @@
     
     <url>
     
+      <loc>/categories/r/</loc>
+      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/r-markdown/</loc>
+      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/regression/</loc>
+      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/</loc>
+      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

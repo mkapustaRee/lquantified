@@ -1,0 +1,575 @@
+---
+title: "Is fine Art a fine Investment? Let's find out using web scraping!"
+author: "Michal Kapusta"
+date: "2018-01-23"
+lastmod: "2018-02-25"
+categories: ["R"]
+tags: ["R Markdown", "plot", "regression"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+library(ggthemes)
+library(rebus)
+library(rvest)
+library(gghighlight)
+
+Sys.setlocale(category = "LC_ALL",locale ="de_DE")
+
+df         <- read_csv(file = "Soga/soga_results.csv")
+
+df_soga_1         <- read_csv(file = "Soga/soga_database_details [2018-01-03].csv")
+df_soga_2         <- read_csv(file = "Soga/soga_database_details [2018-01-25].csv")
+df_soga_3         <- read_csv(file = "Soga/soga_database_details [2018-01-27].csv")
+
+df_soga <- bind_rows(df_soga_1,df_soga_2,df_soga_3) %>% as.tibble()
+
+df_soga_summary <- read_csv(file = "Soga/soga_database [2018-01-02].csv")
+
+df_soga_wide <- read_csv(file = "Soga/df_soga_wide.csv") %>% as.tibble()
+
+```
+
+## Idea 
+
+The idea behind the article was a documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! I heard many times saying: **"Invest in fine Art, is a great investment!"** in the media. In addition, many private banks offer client services such as **Art Consulting** that will offer professional advice (trough art-expert) on buying and selling fine art as a type of alternative investment. 
+
+This analysis is an attempt to **illuminate the returns**  art investor might **generate** using the **actual** transaction data. 
+
+But how? Structured statistics, with the actual transactions that will show prices, trends or patterns are not existent to my knowledge. 
+
+In order to create dataset useful for detailed analysis, programmers are equipped with tools that might be handy -  especially, the web scraping techniques. 
+
+## Approach 
+
+1. Webscrape the SOGA auction house website for all the auctioned paintings (rvest, stringr)
+2. Tidy the raw data into the tidy form (tidyverse, rebus, purrr)
+3. Use tidy data as base for the analysis (tidyverse)
+4. Conclusions 
+
+* the MVF (Most Valuable Function) is the **safely()** function from the package purrr! 
+
+
+### Part I: The webscrape
+
+The website that would be the primary source of information for this analysis is the website of Slovak national gallery auction house: <https://www.soga.sk> (aka SOGA). The website is filled with data that can be categorized as:
+
+* grouped & labeled auctions (since 2005) 
+* all auctioned items are listed  
+* artist, artwork name, starting price, final price data are listed 
+
+The content of the website will provide the fundamental dataset for this analysis.   
+
+First, let's gather the data and build a database containing **all** the data available from the SOGA website. 
+
+But, before we even start web scraping process if this behavior is allowed by the website. More [here](https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77)
+
+```{r check the website settings, eval = F}
+library(robotstxt)
+robotstxt::robotstxt("soga.sk") %>% print()
+```
+
+The website enables the scraping of the data using bots. Great! 
+
+Selectorgadget is used for identification of the web elements containing information about the auctions in the historical overview.
+
+```{r download aution results,eval = FALSE}
+
+
+url <- "http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/vysledky-aukcii"
+
+result <- url %>% read_html() %>%
+        html_nodes("p.results") %>% 
+        html_text()
+
+time <- url %>% read_html() %>%
+        html_nodes("p.about") %>% 
+        html_text()
+
+link <- url %>% read_html() %>%
+        html_nodes("h2 a") %>% 
+        html_attr("href") 
+
+df <- cbind(time, result,link) %>% as.tibble()
+
+```
+
+This chunk of code records following table: 
+
+```{r show}
+df %>% DT::datatable()
+```
+
+
+Successful scrape generated the table with the desired information about: 
+* column **time**: name of the action & date of the auction
+* column **result**: # of auctioned items, % of sold items, auction turnover
+* column **link**: contains the weblink to the actual auction. 
+
+Unfortunately, the data are locked in the records (strings). String manipulation is the key to extract the desired information into **separate** columns:
+
+* date of the auction
+* number and name of the auction
+* number of artwork entering auction
+* success rate of the auctions
+* overall sum of all auctioned items
+
+
+```{r clean auction results,eval = T}
+
+
+# extract time information 
+ptrn <-  ", " %R% one_or_more(DIGIT) %R% "." %R% one_or_more(HEX_DIGIT) %R% "." %R% one_or_more(HEX_DIGIT) 
+df$c_time <- df$time %>% str_extract(pattern = ptrn) %>% str_replace(", ","") %>% lubridate::dmy()
+
+# extract name information 
+df$c_name <- df$time %>%  str_replace(ptrn,"") 
+
+# extract link information
+df$c_link  <- paste0("http://www.soga.sk/",df$link)
+
+# extract percentage information
+ptrn_2 <-  "(" %R% one_or_more(DIGIT) %R% "%)" 
+df$c_rate <- df$result %>% str_extract(pattern = ptrn_2) %>% str_replace("%","") %>% as.numeric()
+
+# clean items information
+ptrn_3 <-  one_or_more(DIGIT) %R% " diel" 
+df$c_items <- df$result %>% str_extract(pattern = ptrn_3) %>% str_replace(" diel","") %>% as.numeric()
+
+# clean price information
+ptrn_4 <- one_or_more(DIGIT) %R% SPACE %R% one_or_more(DIGIT) %R% " €" 
+df$c_price <- df$result %>% str_extract(pattern = ptrn_4) %>%
+        str_replace(" ","") %>% 
+        str_replace("€","") %>% 
+        as.numeric()
+
+# tidy dataframe & calc average price
+df_tidy <- df %>%
+        select(contains("c_")) %>%
+        mutate(year = lubridate::year(c_time),
+               quarter = lubridate::quarter(c_time),
+               qtr = paste0(year,".",quarter),
+               c_price_avg = c_price / c_items)
+
+
+df_tidy %>% 
+        select(-year,-qtr,-quarter) %>% 
+        head() %>%
+        DT::datatable()
+
+```
+
+Clean dataset reveals important information about SOGA auction house performance over the period of years 2001-2017. 
+
+```{r display the results}
+df_summary <- function(data, ...) {
+        
+        group_var <- quos(...)
+        
+        data %>% 
+                group_by(!!!group_var) %>%  
+                summarise(s_price = sum(c_price),
+                          s_items = sum(c_items),
+                          c_price_avg = mean(c_price_avg)) 
+        
+}
+
+# chart overview
+df_tidy %>%
+        df_summary(year) %>%
+        rename(average_price = c_price_avg , 
+               number_of_items = s_items,
+               auction_turnover = s_price) %>% 
+        gather(Ratio, Value, 2:length(.)) %>% 
+        ggplot(aes(year, Value, group = Ratio)) +
+        geom_line(alpha = .3)  +
+        theme_minimal() + 
+        facet_wrap(~Ratio,scales = "free") +
+        tidyquant::geom_ma(n = 4,color = "red", linetype = 1, size = 1) + 
+        labs(title = "SOGA: Overview ",
+             subtitle = "by indicator", caption = "source: www.soga.sk", y = "")
+```
+
+At the first glance, it shows that the sum of all transactions is growing steadily from 2004 to current 2.2€ millions. Additionally, the average price per painting auctioned is growing at a rapid rate. In the year 2004 average painting sold at SOGA was transacted at ca 1271€ and currently, paintings are trading at 5000€. This could be explained by the fact that more expensive paintings are being sold trough SOGA or the prices of the artworks are growing over the time. A quick calculation of the annual growth rate (CAGR) reveals 11% annual increase in the average price per painting.     
+
+A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia>). Following this link leads to every single item auctioned at that unique auction.
+
+Next step is to: 
+
+* scrape all the websites dedicated to listing items sold at one particular auction (user need to click several times next page in order to see all the items)
+* scrape the URLs of the particular items traded on the auction (download the individual URL link of the items)
+* scrape the details regarding starting price, final price, artwork name etc.  
+
+This steps can be executed using following code:
+
+
+```{r download rest,eval = FALSE}
+extract_auction_length      <- function(url) {
+        ptrn <- "page=" %R% one_or_more(DIGIT)
+        
+        num <- url %>% read_html() %>%
+                html_nodes("#auctionArtworks~ .pager .last") %>% 
+                html_attr("href") %>% 
+                str_extract(ptrn) %>% 
+                str_replace("page=","") %>% 
+                as.numeric()
+
+        df <- paste0(url,"?page=")
+        
+        df_seq <- seq(1:num)
+        
+        df_final <- paste0(df,df_seq)
+        return(df_final)
+        
+} # download the auction websites urls
+extract_page_content        <- function(url) {
+        print(url)
+        
+        Sys.sleep(sample(seq(1, 3, by=0.001), 1))
+        
+        article_list <- url %>% read_html() %>%
+                html_nodes("h2") %>% 
+                html_nodes("a") %>% 
+                html_attr("href") 
+        
+        article_list_corrected <- paste0("http://www.soga.sk",
+                                         article_list)
+        
+        return(article_list_corrected)
+        
+} # download the auction items urls
+extract_article_content     <- function(url) {
+        print(url)
+        
+        Sys.sleep(sample(seq(1, 3, by=0.001), 1))
+        
+
+        art_name <- url %>% read_html() %>% 
+                html_nodes("h2 a") %>% 
+                html_text("href")
+        
+        art_piece <- url %>% read_html() %>% 
+                html_nodes(".wrapper a") %>% 
+                html_text("href")
+        
+        art_cat <- url %>% read_html() %>% 
+                html_nodes(".col1") %>% 
+                html_text("href") %>% as.tibble()
+        
+        art_values <- url %>% read_html() %>% 
+                html_nodes(".col2") %>% 
+                html_text("href") %>% as.tibble()
+        
+        art_df <- bind_cols(art_cat,art_values) %>% as.tibble()
+        
+        art_df$name  <- art_name
+        art_df$piece <- art_piece
+        
+        return(art_df)
+        
+        
+} # download the auction item content
+
+df_all_pages                <- map(df$c_link,extract_auction_length) %>% unlist()
+
+df_all_pages_content        <- map(df_all_pages,extract_page_content) %>% unlist()
+
+df_all_pages_content_vec    <- df_all_pages_content %>% pull()
+
+df_all_article_content_sf   <- map(df_all_pages_content_vec,safely(extract_article_content))
+
+```
+
+
+### Part II: Raw data into tidy data 
+
+The downloaded wide raw data have the following structure: 
+
+
+```{r structure of the data}
+df_soga <- df_soga %>%
+        rename(variable = value, value = value1) %>% 
+        drop_na()  
+str(df_soga)
+```
+
+The **variable column** contains the following information:
+
+* Article Number (Poradové číslo) 
+* Starting Price (Vyvolávacia cena) 
+* Final Price (Konečná cena)
+
+Importantly, the auction house sells also other items besides paintings, like sculptures or everyday items. These items is not the target of this analysis and will be removed.
+
+
+```{r get rid of non-paints,echo=F,warning=F}
+df_soga$name <- if_else(df_soga$name == "NA","",df_soga$name) # remove character values of NA and replace them with NA
+df_soga <- df_soga %>% drop_na(name) # drop all rows without labeled author
+```
+
+For more broader audience I will translate the scraped website content from the Slovak language into the English language. 
+
+
+
+```{r from slovak to english}
+df_soga$variable <- if_else(df_soga$variable == "Cena v predaji:", "sale_price",
+                         if_else(df_soga$variable == "Konečná cena:", "final_price",
+                          if_else(df_soga$variable == "Nevydražené", "unsold",
+                          if_else(df_soga$variable == "Odhadovaná cena:", "assumed_price",
+                          if_else(df_soga$variable == "Poradové číslo:", "item_number",
+                          if_else(df_soga$variable == "Vyvolávacia cena:", "starting_price",df_soga$variable)))))) # works but looks ugly - sorry folks
+
+```
+
+The code above is five times nested if_else command - something I am not particularly proud of. It might be a more elegant way to code this but I haven't found it yet.
+
+Next step is to create an ID that will identify author & artwork and finally spread the data from long to wide - in line with the **tidy data** [manifest](https://www.google.de/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6) written by Hadely Wickham.
+
+
+```{r long to wide,eval=F}
+df_soga_wide <- df_soga %>%
+        mutate(id = paste(name, piece)) %>%  # create unique id per row
+        split(.$id) %>%  # split the data per unique artwork
+        map(safely(spread),variable, value) %>% # spread the values - use safely to prevent errors
+        map_df("result") # filter list with suscessfull results 
+
+glimpse(df_soga_wide)
+
+```
+
+Now we have one row per piece and variables stored in columns. This enables a quick and consistent way of working the data. Let's take a glimpse into the data and let's find out the most frequently sold author at the auction house.
+
+
+```{r top 10 most frequently traded artists at SOGA}
+df_soga_wide$name %>%
+        table() %>%
+        as.tibble() %>%
+        arrange(desc(n)) %>% 
+        set_names(c("artist", "count")) %>% 
+        top_n(10) %>% 
+        DT::datatable()
+
+
+```
+
+Great! Now we see that the most frequently sold artist was a **unknown** central European artist with around 360x sold paintings.  
+
+Unfortunately, we can see that the data is still not tidy. This messy dataset is a result of my poorly written web scraping code. (I am sure there is a better R code to scape data more accurately)
+
+Now, lets focus on the columns containing the messy data. All columns are still character variables and contain errors that prohibit transformation into tidy data like: 
+
+* Columns with price data contains symbols currency symbol €
+* Blank space before, after and in between the values
+* Date of birth & death of the artist are not in separate columns
+* Name of the artist contains his living years
+
+Let's remove the known error using string manipulation techniques!
+
+
+```{r tidy the data I}
+
+# tidy the columns with variables containing price informations
+
+df_soga_tidy <- df_soga_wide %>%
+        modify_at(c(5,6), ~ str_replace_all(.,"€","")) %>% # modify_at helps identify collums more efficiently then naming them using mutate
+        modify_at(c(5,6), ~ str_replace_all(.," ","")) %>% 
+        modify_at(c(5,6), ~ str_replace_all(.,"Neurčená","")) %>% 
+        modify_at(c(5,6), ~ str_replace_all(.,",","")) %>% 
+        modify_at(c(5,6), ~ str_replace_all(.,"EUR","")) %>% 
+        modify_at(c(5,6), ~ str_trim(.)) %>% 
+        modify_at(c(5,6), as.numeric)  
+
+# tidy the column names 
+colnames(df_soga_tidy) <- df_soga_tidy %>% 
+                        colnames() %>%
+                        str_to_lower() %>%
+                        str_replace_all(":","") %>%
+                        str_replace_all(" ","_")
+
+# tidy the date of birth & death into two separate collumns
+living_years <- str_extract_all(df_soga_tidy$name, one_or_more(DIGIT),simplify = T) %>% 
+        as.tibble() %>% 
+        set_names(c("birth_year","death_year","birth_year_I","death_year_I")) %>% 
+        select("birth_year","death_year") %>% 
+        modify_if(is.character, as.numeric)
+
+
+df_soga_tidy <- df_soga_tidy %>% 
+                bind_cols(living_years)
+
+# remove years from name column
+df_soga_tidy$name <- df_soga_tidy$name %>% 
+        str_replace_all(pattern = DIGIT,"") %>% 
+        str_replace_all("\\)"," ") %>%
+        str_replace_all("\\(","") %>%
+        str_replace_all("-","") %>% 
+        str_replace_all("–","") %>% 
+        str_trim() %>% 
+        str_to_upper()
+
+# tidy & include assumed_price in the final price
+df_assumed_price_tidy <- df_soga_tidy$assumed_price %>% 
+        str_replace_all("-", "/") %>% 
+        str_replace_all("– ","/") %>% 
+        str_replace_all("€","") %>% 
+        str_replace_all("EUR","") %>% 
+        str_replace_all(",00","") %>% 
+        str_replace_all(",","") %>% 
+        str_replace_all(space(),"") %>% 
+        str_split("/",simplify = T) %>% 
+        as.tibble() %>% 
+        modify(as.numeric) %>% 
+        mutate(assumed_price = (V1 + V2) / 2) %>% 
+        select(assumed_price) 
+
+df_soga_tidy <- bind_cols(dplyr::select(df_soga_tidy, -assumed_price),
+                          df_assumed_price_tidy) 
+
+
+df_soga_tidy %>% glimpse()
+
+```
+
+Much better!!! With the above-written code we have achieved: 
+
+* name more variable contains just the name of the artist 
+* birth_year, death_year column created 
+* assumed price now contains mean value of the range stated
+* numeric vector instead of character vector in the columns containing information about price 
+
+Since we have some tidy data now, let's create some new ratios.
+
+
+```{r create new ratios}
+
+df_soga_tidy <- df_soga_tidy %>% 
+        mutate(starting_price = if_else(is.na(starting_price), assumed_price, as.numeric(starting_price)), # if variable starting_price is NA use assumed_price instead 
+                diff_price_rel = ((final_price - starting_price) / (starting_price)), # relative difference between starting price and final price
+               diff_price_abs = final_price - starting_price ,  # absolute difference between starting price and final price
+               bin_price = ntile(starting_price, 4),  # create bins by starting price 
+               bin_diff_price_rel = ntile(diff_price_rel, 4)) # create bins by relative profit & losses
+
+```
+
+### Part III: Analysis of the data
+
+Since we have tidy data, now or focus can turn to analyzing the underlying data. This part is a cherry on the cake after the painful process of data acquisition & tidying messy data. (I personally 100% agree with Jenny Brians talk: "Behind every great plot there's a great deal of wrangling"). Link to the talk is [here](https://www.youtube.com/watch?v=4MfUCX_KpdE)
+
+Firstly, let's look at the highest prices paid for painting on auction:
+
+```{r highest price per painting}
+df_soga_tidy %>% 
+        drop_na(final_price) %>% 
+        top_n(wt = final_price,n = 15) %>% 
+        ggplot(aes(reorder(piece, final_price),final_price, fill = name)) +
+        geom_col() +
+        coord_flip() + 
+        labs(title = "Highest price paid per paining",
+             subtitle = "sorted by name of the artwork",
+             caption = "Source: www.soga.sk") + 
+        theme_minimal()  + 
+        scale_y_continuous(labels = scales::comma) +
+        theme(legend.text  = element_text(size = 6),
+                legend.title = element_text(size = 6),legend.position = "bottom")
+```
+
+Interestingly, the highest auctioned painting was for the "Chlapec s Dalmatinom" by DOMENICHINO DOMENICO ZAMPIERI, but failed to reach its owner price of 663 878 EUR and was sold at a loss (-132 775 EUR or -19%) @ 531 103 EUR. 
+
+
+This leads to our second chart with paintings sold at the highest **relative** profit:
+
+```{r highest profit per painting - relative }
+df_soga_tidy %>% 
+        drop_na(diff_price_rel) %>% 
+        top_n(wt = diff_price_rel,n = 15) %>% 
+        ggplot(aes(reorder(piece, diff_price_rel),diff_price_rel)) +
+        geom_col() +
+        coord_flip() + 
+        theme_minimal() + 
+        labs(title = "Highest profit generated by painting (in %)",
+             subtitle = "relative, sorted by name of the artwork",
+             y = "Profit (in %)",
+             x = "Artwork",
+             caption = "Source: www.soga.sk") + 
+        scale_y_continuous(labels = scales::percent) 
+```
+
+Surprisingly, the highest profits were in the range of 10x - 15x fold increase compared to the starting price. This is a great result for the investor and the auction house. The most profitable painting was - "Zátišie s ľudovým džbánom" by KRIVOŠ RUDOLF ( [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/102-jarna-aukcia-vytvarnych-diel/krivos-rudolf-zatisie-s-ludovym-dzbanom-30005)
+). Interestingly, this painting was an outlier and the rest of artist paintings generated lower returns.  
+
+Another point of view is to visualize the most profitable paintings in the **absolute** terms.
+
+```{r highest profit per painting - absolute,warning=F }
+df_soga_tidy %>% 
+        drop_na(diff_price_abs) %>% 
+        top_n(wt = diff_price_abs,n = 15) %>% 
+        ggplot(aes(reorder(piece, diff_price_abs),diff_price_abs)) +
+        geom_col() +
+        coord_flip() + 
+        theme_minimal() + 
+        labs(title = "Highest profit generated by painting (in €)",
+             subtitle = "absolute, sorted by name of the artwork",
+             y = "Profit (in %)",
+             x = "Artwork",
+             caption = "Source: www.soga.sk") + 
+        scale_y_continuous(labels = scales::comma) 
+```
+
+Now, let's visualize the relationship between final price and starting price for the whole SOGA dataset. 
+
+```{r chart I - Loses & Profits,warning=F}
+df_loss_profit <- df_soga_tidy %>% 
+        drop_na(final_price, bin_price)
+
+library(plotly) 
+
+plotly::plot_ly(df_loss_profit,
+                x = ~starting_price,
+                y = ~ final_price,
+                color = ~ bin_diff_price_rel,
+                text = ~paste("Name: ", name, "\n",
+                              "Artwork:",piece,"\n",
+                              "Starting Price: ", scales::comma(starting_price), "\n",
+                              "Final Price:",scales::comma(final_price),"\n",
+                              "Return (%):",scales::percent(diff_price_rel),"\n",
+                              "Return (€):", scales::comma(diff_price_abs))) %>%
+  layout(title = "Profits & Losses @ SOGA Auction House",
+         xaxis = list(title = "Starting Price",range = c(0, 200000)),
+         yaxis = list(title = "Starting Price",range = c(0, 200000)))
+
+```
+
+Now it is pretty clear that the outliers where price difference (between starting and final price) was big. This means some paintings fail to meet the expectation and was traded well below the starting price. Another observation - Profits are getting smaller the more we move up the price tag. 
+
+Finally, let's make a summary statistics with the most profitable artist sold at the SOGA auction house. 
+
+```{r best returns per artist,warning=F}
+df_soga_tidy %>% 
+        drop_na(final_price,diff_price_rel,diff_price_abs) %>% 
+        group_by(name) %>% 
+        summarise(profit_relative = median(diff_price_rel, na.rm = T) %>% scales::percent(),
+                  profit_absolute = median(diff_price_abs, na.rm = T) %>% scales::comma(),
+                  artwork_price = median(final_price, na.rm = T) %>% scales::comma(),
+                  count = n(),
+                  sum = sum(diff_price_abs) %>% scales::comma()) %>% 
+        filter(count > 5) %>% 
+        arrange(desc(profit_relative)) %>% 
+        DT::datatable()
+```
+
+The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are **rarely** trade is a liquidity risk for the investor and is recommended to avoid.  
+
+
+## Conclusions
+
+* Average price per painting is increasing for the past 15 years by rate of 10% per annum
+* Purchasing famous painter is not always guaranteeing for a good investment 
+* Gudena, Spannerová or Ignác artwork generated consistently the highest returns ~ 80% per painting 
+* Highest absolute profit was recorded by the artist Benka (ca 332.000€) followed by Ján Halla (ca 185.000€) or Ladislav Mednyánszky (174.000€)
+
+## Known limitations
+* The analysis would be more accurate if the names of the authors were **labeled consistently** (to avoid duplicate records for one artist)
+* The **real profits** might be different to the one calculated. Owners might set the starting price artificially high.   
+
