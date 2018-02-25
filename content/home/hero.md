@@ -24,4 +24,4 @@ weight = 5
 # label = '<i class="fa fa-download"></i> Install Now'
 +++
 
-Personal blog dedicated to augment commercial real estate research with open-source programming language R 
+Personal blog dedicated to investment research using programming language R 

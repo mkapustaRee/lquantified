@@ -50,7 +50,7 @@ defaultContentLanguageInSubdir = false
   avatar = "MK portrait.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = "michal.kapusta@gmail.com"
   address = "Ingolstadt, Germany"
-  phone = "+ 421 176 801 870 68"
+  phone = "+ 49 176 801 870 68"
 
 
   # Enable Keybase in Contact widget by entering your keybase.io username.
@@ -79,7 +79,7 @@ defaultContentLanguageInSubdir = false
   #   1: Google Maps
   #   2: OpenStreetMap (Mapnik)
   #   3: OpenStreetMap (Mapbox)
-  map = 2
+  map = 0
   map_api_key = ""
   latitude = "48.763748"
   longitude = "11.426265"
@@ -221,14 +221,15 @@ defaultContentLanguageInSubdir = false
   align_right = true
 
 [[menu.main]]
-  name = "Personal"
-  url = "#about"
-  weight = 1
-
-[[menu.main]]
   name = "Posts"
   url = "#posts"
+  weight = 1
+  
+ [[menu.main]]
+  name = "About me"
+  url = "#about"
   weight = 3
+
 
 [[menu.main]]
   name = "Contact"
