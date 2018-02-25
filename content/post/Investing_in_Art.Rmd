@@ -35,7 +35,7 @@ df_soga_wide <- read_csv(file = "Soga/df_soga_wide.csv") %>% as.tibble()
 
 ## Idea 
 
-The inspiration to write this was recently viewed documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! This documentary got me curious! Also, I often heard in the media saying: **"Invest in fine Art, is a great investment!"** . In finance world, banks offer clients services such as **Art Consulting**. The service offers advice on buying and selling fine art. 
+The inspiration to write this was recently viewed the documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! This documentary got me curious! Also, I often heard in the media saying: **"Invest in fine Art, is a great investment!"** . In the finance world, banks offer clients services such as **Art Consulting**. The service offers advice on buying and selling fine art. 
 
 This analysis is an attempt to **show evidence**  art investor might **generate** using the **actual** transaction data. Unfortunately, structured data about the actual transactions, trends or patterns are not existent. In order to find useful data, programmers are equipped with handy tools - especially, the web scraping techniques. 
 
@@ -104,7 +104,7 @@ Perfect! The successful scrape generated the table with information about:
 * column **result**: # of auctioned items, % of sold items, auction turnover
 * column **link**: contains the weblink to the actual auction. 
 
-Unfortunately, the data are still locked in the records (strings). The Information is extraced using string manipulation (stringr, rebus) into **separate** columns:
+Unfortunately, the data are still locked in the records (strings). The Information is extracted using string manipulation (stringr, rebus) into **separate** columns:
 
 * date of the auction
 * number and name of the auction
@@ -188,7 +188,7 @@ df_tidy %>%
              subtitle = "by indicator", caption = "source: www.soga.sk", y = "")
 ```
 
-Daata shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 11% CAGR in prices per paiting for the timeperiod.
+Data shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 11% CAGR in prices per painting for the time period.
 
 A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia>).  This link leads to every single item auctioned at that particular auction.
 
@@ -317,7 +317,7 @@ df_soga$variable <- if_else(df_soga$variable == "Cena v predaji:", "sale_price",
 
 The code above is five times nested if_else command - something I am not particularly proud of. It might be a more elegant way to code this but I haven't found it yet.
 
-Next step is to create an ID collumns that identify author & artwork and  spread the data from long to wide - in line with the **tidy data** [manifest](https://www.google.de/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6) written by Hadely Wickham.
+Next step is to create an ID columns that identify author & artwork and spread the data from long to wide - in line with the **tidy data** [manifest](https://www.google.de/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6) written by Hadely Wickham.
 
 
 ```{r long to wide,eval=F}
@@ -573,10 +573,9 @@ df_soga_tidy %>%
         knitr::kable()
 ```
 
+Not suprisingly, **Martin Benka** paintings generated highest profit at the auctions.  [Wiki page](https://sk.wikipedia.org/wiki/Martin_Benka) 
 
-
-PS:The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are **rarely** trade is a liquidity risk for the investor and is recommended to avoid.  
-
+PS: The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are **rarely** trade is a liquidity risk for the investor and is recommended to avoid.  
 
 ## Conclusions
 

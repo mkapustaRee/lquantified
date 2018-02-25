@@ -14,7 +14,7 @@ tags: ["Webscraping", "Purrr", "Rvest","Investment"]
 
 <div id="idea" class="section level2">
 <h2>Idea</h2>
-<p>The inspiration to write this was recently viewed documentary about the life of famous “con” artist Mr. Beltracchi <a href="http://www.imdb.com/title/tt3212568/">link</a>! This documentary got me curious! Also, I often heard in the media saying: <strong>“Invest in fine Art, is a great investment!”</strong> . In finance world, banks offer clients services such as <strong>Art Consulting</strong>. The service offers advice on buying and selling fine art.</p>
+<p>The inspiration to write this was recently viewed the documentary about the life of famous “con” artist Mr. Beltracchi <a href="http://www.imdb.com/title/tt3212568/">link</a>! This documentary got me curious! Also, I often heard in the media saying: <strong>“Invest in fine Art, is a great investment!”</strong> . In the finance world, banks offer clients services such as <strong>Art Consulting</strong>. The service offers advice on buying and selling fine art.</p>
 <p>This analysis is an attempt to <strong>show evidence</strong> art investor might <strong>generate</strong> using the <strong>actual</strong> transaction data. Unfortunately, structured data about the actual transactions, trends or patterns are not existent. In order to find useful data, programmers are equipped with handy tools - especially, the web scraping techniques.</p>
 </div>
 <div id="approach" class="section level2">
@@ -107,7 +107,7 @@ df &lt;- cbind(time, result,link) %&gt;% as.tibble()</code></pre>
 <li>column <strong>result</strong>: # of auctioned items, % of sold items, auction turnover</li>
 <li>column <strong>link</strong>: contains the weblink to the actual auction.</li>
 </ul>
-<p>Unfortunately, the data are still locked in the records (strings). The Information is extraced using string manipulation (stringr, rebus) into <strong>separate</strong> columns:</p>
+<p>Unfortunately, the data are still locked in the records (strings). The Information is extracted using string manipulation (stringr, rebus) into <strong>separate</strong> columns:</p>
 <ul>
 <li>date of the auction</li>
 <li>number and name of the auction</li>
@@ -250,7 +250,7 @@ df_tidy %&gt;%
         labs(title = &quot;SOGA: Overview &quot;,
              subtitle = &quot;by indicator&quot;, caption = &quot;source: www.soga.sk&quot;, y = &quot;&quot;)</code></pre>
 <p><img src="/post/Investing_in_Art_files/figure-html/display%20the%20results-1.png" width="672" /></p>
-<p>Daata shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 11% CAGR in prices per paiting for the timeperiod.</p>
+<p>Data shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 11% CAGR in prices per painting for the time period.</p>
 <p>A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <a href="http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia" class="uri">http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia</a>). This link leads to every single item auctioned at that particular auction.</p>
 <p>Next step is taken in order to: * scrape all the websites dedicated to listing items sold at one particular auction (user need to click several times next page in order to see all the items) * scrape the URLs of the particular items traded on the auction (download the individual URL link of the items) * scrape the details regarding starting price, final price, artwork name etc.</p>
 <p>These steps can be executed using following code:</p>
@@ -355,7 +355,7 @@ str(df_soga)</code></pre>
                           if_else(df_soga$variable == &quot;Poradové číslo:&quot;, &quot;item_number&quot;,
                           if_else(df_soga$variable == &quot;Vyvolávacia cena:&quot;, &quot;starting_price&quot;,df_soga$variable)))))) # works but looks ugly - sorry folks</code></pre>
 <p>The code above is five times nested if_else command - something I am not particularly proud of. It might be a more elegant way to code this but I haven’t found it yet.</p>
-<p>Next step is to create an ID collumns that identify author &amp; artwork and spread the data from long to wide - in line with the <strong>tidy data</strong> <a href="https://www.google.de/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&amp;url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&amp;usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6">manifest</a> written by Hadely Wickham.</p>
+<p>Next step is to create an ID columns that identify author &amp; artwork and spread the data from long to wide - in line with the <strong>tidy data</strong> <a href="https://www.google.de/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&amp;url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&amp;usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6">manifest</a> written by Hadely Wickham.</p>
 <pre class="r"><code>df_soga_wide &lt;- df_soga %&gt;%
         mutate(id = paste(name, piece)) %&gt;%  # create unique id per row
         split(.$id) %&gt;%  # split the data per unique artwork
@@ -876,7 +876,8 @@ widgetframe::frameWidget(pl,width = &quot;95%&quot;,height = 350)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>PS:The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are <strong>rarely</strong> trade is a liquidity risk for the investor and is recommended to avoid.</p>
+<p>Not suprisingly, <strong>Martin Benka</strong> paintings generated highest profit at the auctions. <a href="https://sk.wikipedia.org/wiki/Martin_Benka">Wiki page</a></p>
+<p>PS: The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are <strong>rarely</strong> trade is a liquidity risk for the investor and is recommended to avoid.</p>
 </div>
 </div>
 <div id="conclusions" class="section level2">
