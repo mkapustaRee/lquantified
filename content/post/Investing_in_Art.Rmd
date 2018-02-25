@@ -99,7 +99,7 @@ df <- cbind(time, result,link) %>% as.tibble()
 This chunk of code records following table: 
 
 ```{r show}
-df %>% DT::datatable()
+df %>% head() %>% knitr::kable()
 ```
 
 
@@ -557,7 +557,7 @@ df_soga_tidy %>%
         filter(count > 5) %>% 
         arrange(desc(profit_relative)) %>% 
         dplyr::top_n(50) %>% 
-        DT::datatable()
+        knitr::kable()
 ```
 
 The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are **rarely** trade is a liquidity risk for the investor and is recommended to avoid.  
