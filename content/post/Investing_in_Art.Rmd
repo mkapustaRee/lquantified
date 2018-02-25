@@ -4,7 +4,7 @@ author: "Michal Kapusta"
 date: "2018-01-23"
 lastmod: "2018-02-25"
 categories: ["R"]
-tags: ["R Markdown", "plot", "regression"]
+tags: ["Webscraping", "Purrr", "Rvest","Investment"]
 ---
 
 ```{r setup, include=FALSE}
@@ -35,17 +35,17 @@ df_soga_wide <- read_csv(file = "Soga/df_soga_wide.csv") %>% as.tibble()
 
 ## Idea 
 
-The idea behind the article was a documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! I heard many times saying: **"Invest in fine Art, is a great investment!"** in the media. In addition, many private banks offer client services such as **Art Consulting** that will offer professional advice (trough art-expert) on buying and selling fine art as a type of alternative investment. 
+The idea behind the article was a documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! I often heard saying: **"Invest in fine Art, is a great investment!"** in the media. Also, many private banks offer client services such as **Art Consulting**. The service offers advice on buying and selling fine art. 
 
-This analysis is an attempt to **illuminate the returns**  art investor might **generate** using the **actual** transaction data. 
+This analysis is an attempt to **show evidence**  art investor might **generate** using the **actual** transaction data. 
 
-But how? Structured statistics, with the actual transactions that will show prices, trends or patterns are not existent to my knowledge. 
+But how? Structured statistics, with the actual transactions, trends or patterns are not existent. 
 
-In order to create dataset useful for detailed analysis, programmers are equipped with tools that might be handy -  especially, the web scraping techniques. 
+In order to find useful data, programmers are equipped with handy tools -  especially, the web scraping techniques. 
 
 ## Approach 
 
-1. Webscrape the SOGA auction house website for all the auctioned paintings (rvest, stringr)
+1. Webscrape all the auctioned paintings from the SOGA auction house website  (rvest, stringr)
 2. Tidy the raw data into the tidy form (tidyverse, rebus, purrr)
 3. Use tidy data as base for the analysis (tidyverse)
 4. Conclusions 
@@ -55,7 +55,7 @@ In order to create dataset useful for detailed analysis, programmers are equippe
 
 ### Part I: The webscrape
 
-The website that would be the primary source of information for this analysis is the website of Slovak national gallery auction house: <https://www.soga.sk> (aka SOGA). The website is filled with data that can be categorized as:
+The primary source of information is the website of Slovak national gallery auction house: <https://www.soga.sk> (aka SOGA). The website is filled with data that can be categorized as:
 
 * grouped & labeled auctions (since 2005) 
 * all auctioned items are listed  
@@ -63,18 +63,18 @@ The website that would be the primary source of information for this analysis is
 
 The content of the website will provide the fundamental dataset for this analysis.   
 
-First, let's gather the data and build a database containing **all** the data available from the SOGA website. 
+First, let's gather the data and build a database containing **all** the data available from the website. 
 
-But, before we even start web scraping process if this behavior is allowed by the website. More [here](https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77)
+But, before we even start web scraping process, lets check if the website allows this behavior. More information about using robot.txt [here](https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77)
 
 ```{r check the website settings, eval = F}
 library(robotstxt)
 robotstxt::robotstxt("soga.sk") %>% print()
 ```
 
-The website enables the scraping of the data using bots. Great! 
+Great! The website enables the scraping of the data.
 
-Selectorgadget is used for identification of the web elements containing information about the auctions in the historical overview.
+Next, lets identify the elements we want to scape. Selectorgadget identifies web elements containing auction information.
 
 ```{r download aution results,eval = FALSE}
 
@@ -104,12 +104,12 @@ df %>% head() %>% knitr::kable()
 ```
 
 
-Successful scrape generated the table with the desired information about: 
+Perfect! The successful scrape generated the table with information about: 
 * column **time**: name of the action & date of the auction
 * column **result**: # of auctioned items, % of sold items, auction turnover
 * column **link**: contains the weblink to the actual auction. 
 
-Unfortunately, the data are locked in the records (strings). String manipulation is the key to extract the desired information into **separate** columns:
+Unfortunately, the data are still locked in the records (strings). The Information is extraced using string manipulation (stringr, rebus) into **separate** columns:
 
 * date of the auction
 * number and name of the auction
@@ -162,7 +162,7 @@ df_tidy %>%
 
 ```
 
-Clean dataset reveals important information about SOGA auction house performance over the period of years 2001-2017. 
+Clean dataset reveals important information about auction house performance over the period of years 2001-2017. 
 
 ```{r display the results}
 df_summary <- function(data, ...) {
@@ -193,18 +193,16 @@ df_tidy %>%
              subtitle = "by indicator", caption = "source: www.soga.sk", y = "")
 ```
 
-At the first glance, it shows that the sum of all transactions is growing steadily from 2004 to current 2.2€ millions. Additionally, the average price per painting auctioned is growing at a rapid rate. In the year 2004 average painting sold at SOGA was transacted at ca 1271€ and currently, paintings are trading at 5000€. This could be explained by the fact that more expensive paintings are being sold trough SOGA or the prices of the artworks are growing over the time. A quick calculation of the annual growth rate (CAGR) reveals 11% annual increase in the average price per painting.     
+Daata shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 11% CAGR in prices per paiting for the timeperiod.
 
-A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia>). Following this link leads to every single item auctioned at that unique auction.
+A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia>).  This link leads to every single item auctioned at that particular auction.
 
-Next step is to: 
-
+Next step is taken in order to: 
 * scrape all the websites dedicated to listing items sold at one particular auction (user need to click several times next page in order to see all the items)
 * scrape the URLs of the particular items traded on the auction (download the individual URL link of the items)
 * scrape the details regarding starting price, final price, artwork name etc.  
 
-This steps can be executed using following code:
-
+These steps can be executed using following code:
 
 ```{r download rest,eval = FALSE}
 extract_auction_length      <- function(url) {
@@ -300,9 +298,9 @@ The **variable column** contains the following information:
 
 * Article Number (Poradové číslo) 
 * Starting Price (Vyvolávacia cena) 
-* Final Price (Konečná cena)
+* Final Price (Konečná cena) 
 
-Importantly, the auction house sells also other items besides paintings, like sculptures or everyday items. These items is not the target of this analysis and will be removed.
+Importantly, everyday items (thing sculptures) are sold besides paintings. These items will be removed as they are not the target of this analysis.
 
 
 ```{r get rid of non-paints,echo=F,warning=F}
@@ -310,9 +308,7 @@ df_soga$name <- if_else(df_soga$name == "NA","",df_soga$name) # remove character
 df_soga <- df_soga %>% drop_na(name) # drop all rows without labeled author
 ```
 
-For more broader audience I will translate the scraped website content from the Slovak language into the English language. 
-
-
+For more broader audience I will translate the collum names into the English language. 
 
 ```{r from slovak to english}
 df_soga$variable <- if_else(df_soga$variable == "Cena v predaji:", "sale_price",
@@ -326,7 +322,7 @@ df_soga$variable <- if_else(df_soga$variable == "Cena v predaji:", "sale_price",
 
 The code above is five times nested if_else command - something I am not particularly proud of. It might be a more elegant way to code this but I haven't found it yet.
 
-Next step is to create an ID that will identify author & artwork and finally spread the data from long to wide - in line with the **tidy data** [manifest](https://www.google.de/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6) written by Hadely Wickham.
+Next step is to create an ID collumns that identify author & artwork and  spread the data from long to wide - in line with the **tidy data** [manifest](https://www.google.de/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwjcwpnQ_fjYAhVPyqQKHf05AVMQFggqMAA&url=https%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv059i10%2Fv59i10.pdf&usg=AOvVaw2vJ6CHw9RT8m_noVUfoeP6) written by Hadely Wickham.
 
 
 ```{r long to wide,eval=F}
@@ -340,7 +336,7 @@ glimpse(df_soga_wide)
 
 ```
 
-Now we have one row per piece and variables stored in columns. This enables a quick and consistent way of working the data. Let's take a glimpse into the data and let's find out the most frequently sold author at the auction house.
+Now, we have one row per piece and variables stored in columns. This enables a quick and consistent way of working the data. Let's take a glimpse into the data and let's find out the most frequently sold author at the auction house.
 
 
 ```{r top 10 most frequently traded artists at SOGA}
@@ -355,19 +351,18 @@ df_soga_wide$name %>%
 
 ```
 
-Great! Now we see that the most frequently sold artist was a **unknown** central European artist with around 360x sold paintings.  
+Great! Now we see that the most frequently sold artist was a **unknown central European artist** with around 360x sold paintings.  
 
-Unfortunately, we can see that the data is still not tidy. This messy dataset is a result of my poorly written web scraping code. (I am sure there is a better R code to scape data more accurately)
+Unfortunately, the data is still not tidy. My poorly written web scraping code is responsible for this messy dataset. (I am sure there is a better R code to scape data more accurately)
 
-Now, lets focus on the columns containing the messy data. All columns are still character variables and contain errors that prohibit transformation into tidy data like: 
+Now, lets tidy up columns containing the messy data. Columns are still character variables and errors prohibiting transformation into tidy are: 
 
-* Columns with price data contains symbols currency symbol €
-* Blank space before, after and in between the values
-* Date of birth & death of the artist are not in separate columns
-* Name of the artist contains his living years
+* Columns with price data contains symbols currency symbol € 
+* Blank space before, after and in between the values 
+* Date of birth & death of the artist are not in separate columns 
+* Name of the artist contains his living years 
 
-Let's remove the known error using string manipulation techniques!
-
+Let's remove the errors using string manipulation techniques!
 
 ```{r tidy the data I}
 
@@ -442,7 +437,6 @@ Much better!!! With the above-written code we have achieved:
 
 Since we have some tidy data now, let's create some new ratios.
 
-
 ```{r create new ratios}
 
 df_soga_tidy <- df_soga_tidy %>% 
@@ -456,14 +450,14 @@ df_soga_tidy <- df_soga_tidy %>%
 
 ### Part III: Analysis of the data
 
-Since we have tidy data, now or focus can turn to analyzing the underlying data. This part is a cherry on the cake after the painful process of data acquisition & tidying messy data. (I personally 100% agree with Jenny Brians talk: "Behind every great plot there's a great deal of wrangling"). Link to the talk is [here](https://www.youtube.com/watch?v=4MfUCX_KpdE)
+With tidy data lets focus on analyzing the data. This part, is always a cherry on the cake after the painful process of data acquisition & cleaning. (Jenny Bryans quote: "Behind every great plot there's a great deal of wrangling") - is a accurate one. Link [here](https://www.youtube.com/watch?v=4MfUCX_KpdE)
 
-Firstly, let's look at the highest prices paid for painting on auction:
+First, let's look at the highest prices paid for painting on auction:
 
 ```{r highest price per painting}
 df_soga_tidy %>% 
         drop_na(final_price) %>% 
-        top_n(wt = final_price,n = 15) %>% 
+        top_n(wt = final_price,n = 10) %>% 
         ggplot(aes(reorder(piece, final_price),final_price, fill = name)) +
         geom_col() +
         coord_flip() + 
@@ -476,10 +470,9 @@ df_soga_tidy %>%
                 legend.title = element_text(size = 6),legend.position = "bottom")
 ```
 
-Interestingly, the highest auctioned painting was for the "Chlapec s Dalmatinom" by DOMENICHINO DOMENICO ZAMPIERI, but failed to reach its owner price of 663 878 EUR and was sold at a loss (-132 775 EUR or -19%) @ 531 103 EUR. 
+The highest auctioned painting was for the "Chlapec s Dalmatinom" by DOMENICHINO DOMENICO ZAMPIERI. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR. 
 
-
-This leads to our second chart with paintings sold at the highest **relative** profit:
+The second chart shows paintings sold at the highest **relative** profit:
 
 ```{r highest profit per painting - relative }
 df_soga_tidy %>% 
@@ -497,8 +490,8 @@ df_soga_tidy %>%
         scale_y_continuous(labels = scales::percent) 
 ```
 
-Surprisingly, the highest profits were in the range of 10x - 15x fold increase compared to the starting price. This is a great result for the investor and the auction house. The most profitable painting was - "Zátišie s ľudovým džbánom" by KRIVOŠ RUDOLF ( [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/102-jarna-aukcia-vytvarnych-diel/krivos-rudolf-zatisie-s-ludovym-dzbanom-30005)
-). Interestingly, this painting was an outlier and the rest of artist paintings generated lower returns.  
+Surprisingly, the highest profits were in the range of 10x - 15x fold return This is a great result for the investor. The most profitable painting was - "Zátišie s ľudovým džbánom" by KRIVOŠ RUDOLF ( [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/102-jarna-aukcia-vytvarnych-diel/krivos-rudolf-zatisie-s-ludovym-dzbanom-30005)
+). This painting was also an outlier as rest of KRIVOŠ paintings generated far lower returns.  
 
 Another point of view is to visualize the most profitable paintings in the **absolute** terms.
 
@@ -518,7 +511,10 @@ df_soga_tidy %>%
         scale_y_continuous(labels = scales::comma) 
 ```
 
-Now, let's visualize the relationship between final price and starting price for the whole SOGA dataset. 
+Painting **V žatve** was the paiting sold at the highest profit of about 85 000 EUR. This is an equivalent of the price paid for small 1 bedroom flat in Bratislava.  
+
+
+Now, let's visualize the result of the SOGA auctions: 
 
 ```{r chart I - Loses & Profits,warning=F,message = FALSE}
 df_loss_profit <- df_soga_tidy %>% 
