@@ -5,7 +5,7 @@ active = true
 date = "2016-04-20T00:00:00"
 
 # Order that this section will appear in.
-weight = 5
+weight = 7
 
 # List your academic interests.
 [interests]
@@ -35,6 +35,6 @@ weight = 5
  
 +++
 
-# Biography
+# About
 
 Learned a lot as a private banker during GFC, went to study real estate investment and became research & strategy proffesional. Since 2016 keen learner of R programming language. I enjoy running, cooking, and music.

@@ -40,11 +40,10 @@ defaultContentLanguageInSubdir = false
 
   # Your details.
   name = "Michal Kapusta"
-  role = "Real Estate Research & Investments at Barings."
+  role = "Real Estate Research & Investments"
 
   # Organizations/Affiliations.
   #   Separate multiple entries with a comma, using the form: `[ {name="Org1", url=""}, {name="Org2", url=""} ]`.
-  organizations = [ { name = "Barings, MassMutual Investment Manager", url = "https://www.barings.com" } ]
 
   gravatar = false  # Get your avatar from Gravatar.com? (true/false)
   avatar = "MK portrait.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
@@ -223,18 +222,17 @@ defaultContentLanguageInSubdir = false
 [[menu.main]]
   name = "Posts"
   url = "#posts"
-  weight = 1
+  weight = 3
   
  [[menu.main]]
-  name = "About me"
+  name = "About"
   url = "#about"
-  weight = 3
-
+  weight = 2
 
 [[menu.main]]
   name = "Contact"
   url = "#contact"
-  weight = 6
+  weight = 1
 
 # Taxonomies.
 [taxonomies]
