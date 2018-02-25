@@ -35,9 +35,9 @@ df_soga_wide <- read_csv(file = "Soga/df_soga_wide.csv") %>% as.tibble()
 
 ## Idea 
 
-The inspiration to write this was recently viewed the documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! This documentary got me curious! Also, I often heard in the media saying: **"Invest in fine Art, is a great investment!"** . In the finance world, banks offer clients services such as **Art Consulting**. The service offers advice on buying and selling fine art. 
+The inspiration to write this blog post was the documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! The documentary got me curious about art trading & auctions! Also, I often heard in the media saying: **"Invest in fine Art, is a great investment!"** . In the finance world, banks offer clients services such as **Art Consulting**. The service offers advice on buying and selling fine art. The key to a great advice, is to know which Artist artwork is increasing in value over time and generate profits at the auctions.  
 
-This analysis is an attempt to **show evidence**  art investor might **generate** using the **actual** transaction data. Unfortunately, structured data about the actual transactions, trends or patterns are not existent. In order to find useful data, programmers are equipped with handy tools - especially, the web scraping techniques. 
+This analysis is an attempt to **show evidence** art investor might **generate** using the **actual** transaction data. Unfortunately, structured data about the actual transactions, trends or patterns are not existent. In order to find useful data, programmers are equipped with handy tools - especially, the web scraping techniques. 
 
 ## Approach 
 
