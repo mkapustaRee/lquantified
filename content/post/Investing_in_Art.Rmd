@@ -519,7 +519,7 @@ df_soga_tidy %>%
 
 Now, let's visualize the relationship between final price and starting price for the whole SOGA dataset. 
 
-```{r chart I - Loses & Profits,warning=F}
+```{r chart I - Loses & Profits,warning=F,message = FALSE}
 df_loss_profit <- df_soga_tidy %>% 
         drop_na(final_price, bin_price)
 
@@ -556,6 +556,7 @@ df_soga_tidy %>%
                   sum = sum(diff_price_abs) %>% scales::comma()) %>% 
         filter(count > 5) %>% 
         arrange(desc(profit_relative)) %>% 
+        dplyr::top_n(50) %>% 
         DT::datatable()
 ```
 
