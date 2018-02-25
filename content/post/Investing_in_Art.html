@@ -101,7 +101,12 @@ df &lt;- cbind(time, result,link) %&gt;% as.tibble()</code></pre>
 </tr>
 </tbody>
 </table>
-<p>Perfect! The successful scrape generated the table with information about: * column <strong>time</strong>: name of the action &amp; date of the auction * column <strong>result</strong>: # of auctioned items, % of sold items, auction turnover * column <strong>link</strong>: contains the weblink to the actual auction.</p>
+<p>Perfect! The successful scrape generated the table with information about:</p>
+<ul>
+<li>column <strong>time</strong>: name of the action &amp; date of the auction</li>
+<li>column <strong>result</strong>: # of auctioned items, % of sold items, auction turnover</li>
+<li>column <strong>link</strong>: contains the weblink to the actual auction.</li>
+</ul>
 <p>Unfortunately, the data are still locked in the records (strings). The Information is extraced using string manipulation (stringr, rebus) into <strong>separate</strong> columns:</p>
 <ul>
 <li>date of the auction</li>
@@ -523,7 +528,7 @@ df_soga_tidy %&gt;% glimpse()</code></pre>
         ggplot(aes(reorder(piece, final_price),final_price)) +
         geom_col() +
         coord_flip() + 
-        labs(title = &quot;Highest price paid per paining&quot;,
+        labs(title = &quot;Highest price paid per painting&quot;,
              subtitle = &quot;sorted by name of the artwork&quot;,
              caption = &quot;Source: www.soga.sk&quot;, y = &quot;artwork&quot;) + 
         theme_minimal(base_family = &quot;Verdana&quot;,base_size = 12)  + 

@@ -98,7 +98,8 @@ df %>% head() %>% knitr::kable()
 ```
 
 
-Perfect! The successful scrape generated the table with information about: 
+Perfect! The successful scrape generated the table with information about:
+
 * column **time**: name of the action & date of the auction
 * column **result**: # of auctioned items, % of sold items, auction turnover
 * column **link**: contains the weblink to the actual auction. 
@@ -455,7 +456,7 @@ df_soga_tidy %>%
         ggplot(aes(reorder(piece, final_price),final_price)) +
         geom_col() +
         coord_flip() + 
-        labs(title = "Highest price paid per paining",
+        labs(title = "Highest price paid per painting",
              subtitle = "sorted by name of the artwork",
              caption = "Source: www.soga.sk", y = "artwork") + 
         theme_minimal(base_family = "Verdana",base_size = 12)  + 
