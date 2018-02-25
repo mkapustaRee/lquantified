@@ -529,7 +529,7 @@ pl <- plotly::plot_ly(df_loss_profit,
                               "Return (€):", scales::comma(diff_price_abs))) %>%
   layout(title = "Profits & Losses @ SOGA Auction House",
          xaxis = list(title = "Starting Price",range = c(0, 200000)),
-         yaxis = list(title = "Starting Price",range = c(0, 200000)))
+         yaxis = list(title = "Final Price",range = c(0, 200000)))
 
 widgetframe::frameWidget(pl,width = "95%",height = 350)
 
