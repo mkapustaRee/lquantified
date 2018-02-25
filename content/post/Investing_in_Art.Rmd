@@ -559,7 +559,7 @@ df_soga_tidy %>%
                   sum = sum(diff_price_abs) %>% scales::comma()) %>% 
         filter(count > 5) %>% 
         arrange(desc(profit_relative)) %>% 
-        dplyr::top_n(n = 15) %>% 
+        dplyr::top_n(wt = profit_relative, n = 15) %>% 
         knitr::kable()
 ```
 
