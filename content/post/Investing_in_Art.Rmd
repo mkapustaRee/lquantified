@@ -186,7 +186,7 @@ df_tidy %>%
         gather(Ratio, Value, 2:length(.)) %>% 
         ggplot(aes(year, Value, group = Ratio)) +
         geom_line(alpha = .3)  +
-        theme_minimal() + 
+        theme_minimal(base_family = "Verdana",base_size = 16) + 
         facet_wrap(~Ratio,scales = "free") +
         tidyquant::geom_ma(n = 4,color = "red", linetype = 1, size = 1) + 
         labs(title = "SOGA: Overview ",
@@ -526,7 +526,9 @@ df_loss_profit <- df_soga_tidy %>%
 
 library(plotly) 
 
-pl <- plotly::plot_ly(df_loss_profit,
+
+
+plotly::plot_ly(df_loss_profit,
                 x = ~starting_price,
                 y = ~ final_price,
                 color = ~ bin_diff_price_rel,
@@ -540,7 +542,7 @@ pl <- plotly::plot_ly(df_loss_profit,
          xaxis = list(title = "Starting Price",range = c(0, 200000)),
          yaxis = list(title = "Starting Price",range = c(0, 200000)))
 
-widgetframe::frameWidget(pl)
+
 
 ```
 
