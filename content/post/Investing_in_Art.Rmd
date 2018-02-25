@@ -15,6 +15,7 @@ library(ggthemes)
 library(rebus)
 library(rvest)
 library(gghighlight)
+library(widgetframe)
 
 Sys.setlocale(category = "LC_ALL",locale ="de_DE")
 
@@ -525,7 +526,7 @@ df_loss_profit <- df_soga_tidy %>%
 
 library(plotly) 
 
-plotly::plot_ly(df_loss_profit,
+pl <- plotly::plot_ly(df_loss_profit,
                 x = ~starting_price,
                 y = ~ final_price,
                 color = ~ bin_diff_price_rel,
@@ -538,6 +539,8 @@ plotly::plot_ly(df_loss_profit,
   layout(title = "Profits & Losses @ SOGA Auction House",
          xaxis = list(title = "Starting Price",range = c(0, 200000)),
          yaxis = list(title = "Starting Price",range = c(0, 200000)))
+
+widgetframe::frameWidget(pl)
 
 ```
 
@@ -556,7 +559,7 @@ df_soga_tidy %>%
                   sum = sum(diff_price_abs) %>% scales::comma()) %>% 
         filter(count > 5) %>% 
         arrange(desc(profit_relative)) %>% 
-        dplyr::top_n(50) %>% 
+        dplyr::top_n(n = 15) %>% 
         knitr::kable()
 ```
 
