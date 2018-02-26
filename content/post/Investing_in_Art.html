@@ -540,7 +540,7 @@ df_soga_tidy %&gt;% glimpse()</code></pre>
         theme(legend.text  = element_text(size = 6),
                 legend.title = element_text(size = 6),legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="/post/Investing_in_Art_files/figure-html/highest%20price%20per%20painting-1.png" width="672" /></p>
-<p>The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.</p>
+<p>The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/59-jesenna-aukcia-vytvarnych-diel/domenichino-domenico-zampieri-chlapec-s-dalmatinom-9260">link</a>. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.</p>
 <p>The second chart shows paintings sold at the highest <strong>relative</strong> profit:</p>
 <pre class="r"><code>df_soga_tidy %&gt;% 
         drop_na(diff_price_rel) %&gt;% 
@@ -570,7 +570,7 @@ df_soga_tidy %&gt;% glimpse()</code></pre>
              caption = &quot;Source: www.soga.sk&quot;) + 
         scale_y_continuous(labels = scales::comma) </code></pre>
 <p><img src="/post/Investing_in_Art_files/figure-html/highest%20profit%20per%20painting%20-%20absolute-1.png" width="672" /></p>
-<p>Painting <strong>V žatve</strong> was the paiting sold at the highest profit of about 85 000 EUR. This is an equivalent of the price paid for small 1 bedroom flat in Bratislava.</p>
+<p>Painting <strong>Po žatve</strong> <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/107-vecerna-aukcia/benka-martin-po-zatve-32046">link</a> was the paiting sold at the highest profit of about 85 000 EUR.</p>
 <p>Now, let’s visualize the result of the SOGA auctions:</p>
 <pre class="r"><code>df_loss_profit &lt;- df_soga_tidy %&gt;% 
         drop_na(final_price, bin_price)

@@ -471,7 +471,7 @@ df_soga_tidy %>%
                 legend.title = element_text(size = 6),legend.position = "bottom")
 ```
 
-The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.
+The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/59-jesenna-aukcia-vytvarnych-diel/domenichino-domenico-zampieri-chlapec-s-dalmatinom-9260). Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.
 
 The second chart shows paintings sold at the highest **relative** profit:
 
@@ -510,7 +510,7 @@ df_soga_tidy %>%
         scale_y_continuous(labels = scales::comma) 
 ```
 
-Painting **V žatve** was the paiting sold at the highest profit of about 85 000 EUR. This is an equivalent of the price paid for small 1 bedroom flat in Bratislava.  
+Painting **Po žatve** [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/107-vecerna-aukcia/benka-martin-po-zatve-32046) was the paiting sold at the highest profit of about 85 000 EUR. 
 
 
 Now, let's visualize the result of the SOGA auctions: 
