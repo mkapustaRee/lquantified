@@ -293,7 +293,62 @@
 <p>Before we start web scraping process the website has to allow this behavior. More information about using robot.txt <a href="https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77" target="_blank">here</a></p>
 
 <pre><code class="language-r">library(robotstxt)
-robotstxt::robotstxt(&quot;soga.sk&quot;) %&gt;% print()
+</code></pre>
+
+<pre><code>## Warning: package 'robotstxt' was built under R version 3.4.3
+</code></pre>
+
+<pre><code class="language-r">robotstxt::robotstxt(&quot;soga.sk&quot;) %&gt;% print()
+</code></pre>
+
+<pre><code>## $domain
+## [1] &quot;soga.sk&quot;
+## 
+## $text
+## # robots.txt file for http://www.soga.sk
+## 
+## User-agent: *
+## Disallow:
+## 
+## $bots
+## [1] &quot;*&quot;
+## 
+## $comments
+##   line                                  comment
+## 1    1 # robots.txt file for http://www.soga.sk
+## 
+## $permissions
+##      field useragent value
+## 1 Disallow         *      
+## 
+## $crawl_delay
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $host
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $sitemap
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $other
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $robexclobj
+## &lt;Robots Exclusion Protocol Object&gt;
+## $check
+## function (paths = &quot;/&quot;, bot = &quot;*&quot;) 
+## {
+##     spiderbar::can_fetch(obj = self$robexclobj, path = paths, 
+##         user_agent = bot)
+## }
+## &lt;environment: 0x7fdf380fd8e0&gt;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;robotstxt&quot;
 </code></pre>
 
 <p>Great! The website enables the scraping of the data.</p>
@@ -737,7 +792,7 @@ df_soga_tidy %&gt;% glimpse()
 
 <p><img src="Investing_in_Art_files/figure-html/highest price per painting-1.png" width="672" /></p>
 
-<p>The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.</p>
+<p>The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/59-jesenna-aukcia-vytvarnych-diel/domenichino-domenico-zampieri-chlapec-s-dalmatinom-9260" target="_blank">link</a>. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.</p>
 
 <p>The second chart shows paintings sold at the highest <strong>relative</strong> profit:</p>
 
@@ -778,7 +833,7 @@ df_soga_tidy %&gt;% glimpse()
 
 <p><img src="Investing_in_Art_files/figure-html/highest profit per painting - absolute-1.png" width="672" /></p>
 
-<p>Painting <strong>V žatve</strong> was the paiting sold at the highest profit of about 85 000 EUR. This is an equivalent of the price paid for small 1 bedroom flat in Bratislava.</p>
+<p>Painting <strong>Po žatve</strong> <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/107-vecerna-aukcia/benka-martin-po-zatve-32046" target="_blank">link</a> was the paiting sold at the highest profit of about 85 000 EUR.</p>
 
 <p>Now, let&rsquo;s visualize the result of the SOGA auctions:</p>
 
@@ -805,7 +860,7 @@ pl &lt;- plotly::plot_ly(df_loss_profit,
 widgetframe::frameWidget(pl,width = &quot;100%&quot;,height = 550)
 </code></pre>
 
-<p>preserveafd9cdaefceb1e21</p>
+<p>preserve99abf856b0e74bcc</p>
 
 <p>After playing the the HTML widget for few minutes i have several observation. Some paintings failed to meet the expectation and were traded well below the asking price. Also important to note is that profits are getting smaller the more expensive the painting is.</p>
 
@@ -949,6 +1004,8 @@ LADISLAV MEDNYÁNSZKY         1.11%             33                2,539         
   <div class="hr-light"></div>
   <h3>Related</h3>
   <ul>
+    
+    <li><a href="/post/investing_in_art/">Is fine Art a fine Investment? Let&#39;s find out using web scraping!</a></li>
     
     <li><a href="/post/investing_in_art.knit/">Is fine Art a fine Investment? Let&#39;s find out using web scraping!</a></li>
     

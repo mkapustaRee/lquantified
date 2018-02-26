@@ -61,7 +61,7 @@ The primary source of information is the website of Slovak national gallery auct
 
 Before we start web scraping process the website has to allow this behavior. More information about using robot.txt [here](https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77)
 
-```{r check the website settings, eval = F}
+```{r check the website settings, eval = T}
 library(robotstxt)
 robotstxt::robotstxt("soga.sk") %>% print()
 ```
@@ -545,7 +545,7 @@ After playing the the HTML widget for few minutes i have several observation. So
 Here is summary statistics with the most profitable artist sold at the SOGA auction house.
 
 ```{r best returns per artist,warning=F}
-df_soga_tidy %>% 
+df <- df_soga_tidy %>% 
         drop_na(final_price,diff_price_rel,diff_price_abs) %>% 
         group_by(name) %>% 
         summarise(profit_relative = median(diff_price_rel, na.rm = T) %>% scales::percent(),
@@ -604,7 +604,6 @@ df_soga_tidy %>%
         scale_x_continuous(labels = scales::percent)
         
 ```
-
 
 
 ## Conclusions

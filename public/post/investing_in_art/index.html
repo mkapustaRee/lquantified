@@ -290,8 +290,57 @@
 <li>artist, artwork name, starting price, final price data are listed</li>
 </ul>
 <p>Before we start web scraping process the website has to allow this behavior. More information about using robot.txt <a href="https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77">here</a></p>
-<pre class="r"><code>library(robotstxt)
-robotstxt::robotstxt(&quot;soga.sk&quot;) %&gt;% print()</code></pre>
+<pre class="r"><code>library(robotstxt)</code></pre>
+<pre><code>## Warning: package &#39;robotstxt&#39; was built under R version 3.4.3</code></pre>
+<pre class="r"><code>robotstxt::robotstxt(&quot;soga.sk&quot;) %&gt;% print()</code></pre>
+<pre><code>## $domain
+## [1] &quot;soga.sk&quot;
+## 
+## $text
+## # robots.txt file for http://www.soga.sk
+## 
+## User-agent: *
+## Disallow:
+## 
+## $bots
+## [1] &quot;*&quot;
+## 
+## $comments
+##   line                                  comment
+## 1    1 # robots.txt file for http://www.soga.sk
+## 
+## $permissions
+##      field useragent value
+## 1 Disallow         *      
+## 
+## $crawl_delay
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $host
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $sitemap
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $other
+## [1] field     useragent value    
+## &lt;0 rows&gt; (or 0-length row.names)
+## 
+## $robexclobj
+## &lt;Robots Exclusion Protocol Object&gt;
+## $check
+## function (paths = &quot;/&quot;, bot = &quot;*&quot;) 
+## {
+##     spiderbar::can_fetch(obj = self$robexclobj, path = paths, 
+##         user_agent = bot)
+## }
+## &lt;environment: 0x7fa8d1079120&gt;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;robotstxt&quot;</code></pre>
 <p>Great! The website enables the scraping of the data.</p>
 <p>First step is to gather the data and build a database that contains all the data available from the website.</p>
 <p>Next step is to identify the elements we want to scape. Selectorgadget identifies web elements containing auction information.</p>
@@ -501,7 +550,7 @@ df_tidy %&gt;%
         tidyquant::geom_ma(n = 4,color = &quot;red&quot;, linetype = 1, size = 1) + 
         labs(title = &quot;SOGA: Overview &quot;,
              subtitle = &quot;by indicator&quot;, caption = &quot;source: www.soga.sk&quot;, y = &quot;&quot;)</code></pre>
-<p><img src="/post/Investing_in_Art_files/figure-html/display%20the%20results-1.png" width="672" /></p>
+<p><img src="/post/Investing_in_Art_files/figure-html/display the results-1.png" width="672" /></p>
 <p>Data shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 10% CAGR in prices per painting for the time period.</p>
 <p>A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <a href="http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia" class="uri">http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia</a>). This link leads to every single item auctioned at that particular auction.</p>
 <p>Next step is taken in order to:</p>
@@ -791,7 +840,7 @@ df_soga_tidy %&gt;% glimpse()</code></pre>
         scale_y_continuous(labels = scales::comma) +
         theme(legend.text  = element_text(size = 6),
                 legend.title = element_text(size = 6),legend.position = &quot;bottom&quot;)</code></pre>
-<p><img src="/post/Investing_in_Art_files/figure-html/highest%20price%20per%20painting-1.png" width="672" /></p>
+<p><img src="/post/Investing_in_Art_files/figure-html/highest price per painting-1.png" width="672" /></p>
 <p>The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/59-jesenna-aukcia-vytvarnych-diel/domenichino-domenico-zampieri-chlapec-s-dalmatinom-9260">link</a>. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.</p>
 <p>The second chart shows paintings sold at the highest <strong>relative</strong> profit:</p>
 <pre class="r"><code>df_soga_tidy %&gt;% 
@@ -806,7 +855,7 @@ df_soga_tidy %&gt;% glimpse()</code></pre>
              x = &quot;Artwork&quot;,
              caption = &quot;Source: www.soga.sk&quot;) + 
         scale_y_continuous(labels = scales::percent) </code></pre>
-<p><img src="/post/Investing_in_Art_files/figure-html/highest%20profit%20per%20painting%20-%20relative-1.png" width="672" /></p>
+<p><img src="/post/Investing_in_Art_files/figure-html/highest profit per painting - relative-1.png" width="672" /></p>
 <p>Surprisingly, the highest profits were in the range of 10x - 15x fold return. This is a great result for the investor. The most profitable painting was - “Zátišie s ľudovým džbánom” by KRIVOŠ RUDOLF ( <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/102-jarna-aukcia-vytvarnych-diel/krivos-rudolf-zatisie-s-ludovym-dzbanom-30005">link</a> ). This painting was also an outlier as rest of KRIVOŠ paintings generated far lower returns.</p>
 <p>Another point of view is to visualize the most profitable paintings in the <strong>absolute</strong> terms.</p>
 <pre class="r"><code>df_soga_tidy %&gt;% 
@@ -821,7 +870,7 @@ df_soga_tidy %&gt;% glimpse()</code></pre>
              x = &quot;Painting&quot;,
              caption = &quot;Source: www.soga.sk&quot;) + 
         scale_y_continuous(labels = scales::comma) </code></pre>
-<p><img src="/post/Investing_in_Art_files/figure-html/highest%20profit%20per%20painting%20-%20absolute-1.png" width="672" /></p>
+<p><img src="/post/Investing_in_Art_files/figure-html/highest profit per painting - absolute-1.png" width="672" /></p>
 <p>Painting <strong>Po žatve</strong> <a href="http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/107-vecerna-aukcia/benka-martin-po-zatve-32046">link</a> was the paiting sold at the highest profit of about 85 000 EUR.</p>
 <p>Now, let’s visualize the result of the SOGA auctions:</p>
 <pre class="r"><code>df_loss_profit &lt;- df_soga_tidy %&gt;% 
@@ -849,7 +898,7 @@ widgetframe::frameWidget(pl,width = &quot;100%&quot;,height = 550)</code></pre>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/Investing_in_Art_files/figure-html//widgets/widget_chart I - Loses & Profits.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <p>After playing the the HTML widget for few minutes i have several observation. Some paintings failed to meet the expectation and were traded well below the asking price. Also important to note is that profits are getting smaller the more expensive the painting is.</p>
 <p>Here is summary statistics with the most profitable artist sold at the SOGA auction house.</p>
-<pre class="r"><code>df_soga_tidy %&gt;% 
+<pre class="r"><code>df &lt;- df_soga_tidy %&gt;% 
         drop_na(final_price,diff_price_rel,diff_price_abs) %&gt;% 
         group_by(name) %&gt;% 
         summarise(profit_relative = median(diff_price_rel, na.rm = T) %&gt;% scales::percent(),
@@ -861,140 +910,6 @@ widgetframe::frameWidget(pl,width = &quot;100%&quot;,height = 550)</code></pre>
         arrange(desc(profit_relative)) %&gt;% 
         dplyr::top_n(wt = profit_relative, n = 15) %&gt;% 
         knitr::kable()</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">name</th>
-<th align="left">profit_relative</th>
-<th align="left">profit_absolute</th>
-<th align="left">artwork_price</th>
-<th align="right">count</th>
-<th align="right">sum</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">LADISLAV GUDERNA</td>
-<td align="left">87.7%</td>
-<td align="left">2,257</td>
-<td align="left">4,149</td>
-<td align="right">7</td>
-<td align="right">11284</td>
-</tr>
-<tr class="even">
-<td align="left">EDITA SPANNEROVÁ</td>
-<td align="left">86.7%</td>
-<td align="left">249</td>
-<td align="left">713.5</td>
-<td align="right">8</td>
-<td align="right">2754</td>
-</tr>
-<tr class="odd">
-<td align="left">BIZMAYER IGNÁC</td>
-<td align="left">85.6%</td>
-<td align="left">325</td>
-<td align="left">1,325</td>
-<td align="right">14</td>
-<td align="right">7820</td>
-</tr>
-<tr class="even">
-<td align="left">STRUHÁR ALOJZ</td>
-<td align="left">8.33%</td>
-<td align="left">25</td>
-<td align="left">310</td>
-<td align="right">6</td>
-<td align="right">200</td>
-</tr>
-<tr class="odd">
-<td align="left">MARTIN SEDLÁK</td>
-<td align="left">8.28%</td>
-<td align="left">66</td>
-<td align="left">1,062</td>
-<td align="right">7</td>
-<td align="right">631</td>
-</tr>
-<tr class="even">
-<td align="left">ZBYNĚK PROKOP</td>
-<td align="left">76.5%</td>
-<td align="left">50.5</td>
-<td align="left">116.5</td>
-<td align="right">6</td>
-<td align="right">302</td>
-</tr>
-<tr class="odd">
-<td align="left">JÚLIUS JAKOBY</td>
-<td align="left">74.2%</td>
-<td align="left">3,071</td>
-<td align="left">7,800.5</td>
-<td align="right">6</td>
-<td align="right">16000</td>
-</tr>
-<tr class="even">
-<td align="left">FRANTIŠEK LIPTÁK</td>
-<td align="left">7.93%</td>
-<td align="left">100</td>
-<td align="left">746.5</td>
-<td align="right">12</td>
-<td align="right">1661</td>
-</tr>
-<tr class="odd">
-<td align="left">VINCENT HLOŽNÍK</td>
-<td align="left">7.49%</td>
-<td align="left">132</td>
-<td align="left">1,461</td>
-<td align="right">19</td>
-<td align="right">14736</td>
-</tr>
-<tr class="even">
-<td align="left">DÁVID BAFFI</td>
-<td align="left">66%</td>
-<td align="left">49.5</td>
-<td align="left">99.5</td>
-<td align="right">6</td>
-<td align="right">397</td>
-</tr>
-<tr class="odd">
-<td align="left">JOZEF JANKOVIČ</td>
-<td align="left">64%</td>
-<td align="left">531</td>
-<td align="left">1,759</td>
-<td align="right">9</td>
-<td align="right">15469</td>
-</tr>
-<tr class="even">
-<td align="left">FRANTIŠEK REICHENTÁL</td>
-<td align="left">62.5%</td>
-<td align="left">132</td>
-<td align="left">1,162</td>
-<td align="right">9</td>
-<td align="right">11021</td>
-</tr>
-<tr class="odd">
-<td align="left">KĽÚČIK PETER</td>
-<td align="left">60%</td>
-<td align="left">90</td>
-<td align="left">240</td>
-<td align="right">17</td>
-<td align="right">6700</td>
-</tr>
-<tr class="even">
-<td align="left">MILOŠ ALEXANDER BAZOVSKÝ</td>
-<td align="left">6.31%</td>
-<td align="left">67</td>
-<td align="left">3,485</td>
-<td align="right">21</td>
-<td align="right">26457</td>
-</tr>
-<tr class="odd">
-<td align="left">KERN PETER JÚLIUS</td>
-<td align="left">5.56%</td>
-<td align="left">10</td>
-<td align="left">470</td>
-<td align="right">10</td>
-<td align="right">730</td>
-</tr>
-</tbody>
-</table>
 <p>The table shows results sorted by the highest median relative profit. In other words - artist generating highest profits per painting is at the top. Based on this table Ladislav Guderna paintings generated average profit of 87%. The author was traded 7x times. Average price per painting was 4 149 EUR generating profit of 2 257 EUR. The total sum of profits generated by Guderna reached 11 284 EUR.</p>
 <p>Similarly below are the authors generating the highest <strong>absolute</strong> profits.</p>
 <table>
