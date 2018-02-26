@@ -49,7 +49,7 @@ defaultContentLanguageInSubdir = false
   avatar = "MK portrait.jpg"  # Specify an avatar image (in `static/img/` folder) or delete value to disable avatar.
   email = "michal.kapusta@gmail.com"
   address = "Ingolstadt, Germany"
-
+  phone = ""
 
   # Enable Keybase in Contact widget by entering your keybase.io username.
   keybase = ""
