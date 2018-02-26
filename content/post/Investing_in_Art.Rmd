@@ -1,10 +1,10 @@
 ---
 title: "Is fine Art a fine Investment? Let's find out using web scraping!"
 author: "Michal Kapusta"
-date: "2018-01-23"
-lastmod: "2018-02-25"
-categories: ["R"]
-tags: ["Webscraping", "Purrr", "Rvest","Investment"]
+date: "2018-02-26"
+lastmod: "2018-02-26"
+categories: ["R"]       
+tags: ["Webscraping", "Purrr", "Rvest","Plotly","Art","Investment"]
 ---
 
 ```{r setup, include=FALSE}
@@ -31,13 +31,15 @@ df_soga_summary <- read_csv(file = "Soga/soga_database [2018-01-02].csv")
 
 df_soga_wide <- read_csv(file = "Soga/df_soga_wide.csv") %>% as.tibble()
 
+df_soga_wide <- df_soga_wide %>% mutate(piece = if_else(piece == "Margaréta II., dánska kráľovná, z cyklu Vládnuce kráľovné (portfólio 4 sieťotlačí)", "Margaréta II",piece))
+
 ```
 
 ## Idea 
 
-The inspiration to write this blog post was the documentary about the life of famous "con" artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>)! The documentary got me curious about art trading & auctions! Also, I often heard in the media saying: **"Invest in fine Art, is a great investment!"** . In the finance world, banks offer clients services such as **Art Consulting**. The service offers advice on buying and selling fine art. The key to a great advice, is to know which Artist artwork is increasing in value over time and generate profits at the auctions.  
+The inspiration to write this article was a documentary about the life of a famous “con” artist Mr. Beltracchi [link](<http://www.imdb.com/title/tt3212568/>) which got me curious about art trading & auctions. I often hear the media saying: **“Invest in fine Art, it is a great investment!”**. In the finance world, banks offer clients services such as Art Consulting. The service offers advice on buying and selling fine art. The key to a great advice is to know which Artist’s artwork is increasing in value over time and generate profits at the auctions and which one doesn’t.
 
-This analysis is an attempt to **show evidence** art investor might **generate** using the **actual** transaction data. Unfortunately, structured data about the actual transactions, trends or patterns are not existent. In order to find useful data, programmers are equipped with handy tools - especially, the web scraping techniques. 
+This analysis **shows evidence** an art investor might use when making investment decisions based on actual transaction data. Structured transaction data, trends or patterns are non existent so in order to find them I have used handy web scraping techniques to start with. I have then analyzed the data and created interactive charts that hopefully provide insights into the world of Slovak art auctions. 
 
 ## Approach 
 
@@ -57,9 +59,7 @@ The primary source of information is the website of Slovak national gallery auct
 * all auctioned items are listed  
 * artist, artwork name, starting price, final price data are listed 
 
-First, let's gather the data and build a database containing **all** the data available from the website. 
-
-But, before we even start web scraping process, lets check if the website allows this behavior. More information about using robot.txt [here](https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77)
+Before we start web scraping process the website has to allow this behavior. More information about using robot.txt [here](https://towardsdatascience.com/functions-with-r-and-rvest-a-laymens-guide-acda42325a77)
 
 ```{r check the website settings, eval = F}
 library(robotstxt)
@@ -68,7 +68,9 @@ robotstxt::robotstxt("soga.sk") %>% print()
 
 Great! The website enables the scraping of the data.
 
-Next, lets identify the elements we want to scape. Selectorgadget identifies web elements containing auction information.
+First step is to gather the data and build a database that contains all the data available from the website.
+
+Next step is to identify the elements we want to scape. Selectorgadget identifies web elements containing auction information.
 
 ```{r download aution results,eval = FALSE}
 
@@ -104,7 +106,7 @@ Perfect! The successful scrape generated the table with information about:
 * column **result**: # of auctioned items, % of sold items, auction turnover
 * column **link**: contains the weblink to the actual auction. 
 
-Unfortunately, the data are still locked in the records (strings). The Information is extracted using string manipulation (stringr, rebus) into **separate** columns:
+Unfortunately, the data are still locked in the records. The Information is extracted using string manipulation (stringr, rebus) into **separate** columns:
 
 * date of the auction
 * number and name of the auction
@@ -188,13 +190,14 @@ df_tidy %>%
              subtitle = "by indicator", caption = "source: www.soga.sk", y = "")
 ```
 
-Data shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 11% CAGR in prices per painting for the time period.
+Data shows SOGA turnover is growing steadily from 2004. Additionally, the average price per painting sold at auction is growing. Average price grew from ~1200€ to current ~5000€ in 14 years. This means either more expensive paintings are being sold or the prices of the artworks are growing. A calculation reveals 10% CAGR in prices per painting for the time period.
 
 A byproduct of the scrape is the URL to every single auction in SOGA history (for example here <http://www.soga.sk//aukcie-obrazy-diela-umenie-starozitnosti/aukcie/134-vecerna-aukcia>).  This link leads to every single item auctioned at that particular auction.
 
 Next step is taken in order to: 
-* scrape all the websites dedicated to listing items sold at one particular auction (user need to click several times next page in order to see all the items)
-* scrape the URLs of the particular items traded on the auction (download the individual URL link of the items)
+
+* scrape all the websites dedicated to listing items sold at one particular auction (user need to click several times next page in order to see all the items) 
+* scrape the URLs of the particular items traded on the auction (download the individual URL link of the items) 
 * scrape the details regarding starting price, final price, artwork name etc.  
 
 These steps can be executed using following code:
@@ -276,11 +279,9 @@ df_all_article_content_sf   <- map(df_all_pages_content_vec,safely(extract_artic
 
 ```
 
-
 ### Part II: Raw data into tidy data 
 
 The downloaded wide raw data have the following structure: 
-
 
 ```{r structure of the data}
 df_soga <- df_soga %>%
@@ -295,7 +296,7 @@ The **variable column** contains the following information:
 * Starting Price (Vyvolávacia cena) 
 * Final Price (Konečná cena) 
 
-Importantly, everyday items (thing sculptures) are sold besides paintings. These items will be removed as they are not the target of this analysis.
+Importantly, everyday items (such as sculptures) are sold besides paintings. These items will be removed as they are not the target of this analysis.
 
 
 ```{r get rid of non-paints,echo=F,warning=F}
@@ -333,7 +334,6 @@ glimpse(df_soga_wide)
 
 Now, we have one row per piece and variables stored in columns. This enables a quick and consistent way of working the data. Let's take a glimpse into the data and let's find out the most frequently sold author at the auction house.
 
-
 ```{r top 10 most frequently traded artists at SOGA}
 df_soga_wide$name %>%
         table() %>%
@@ -346,11 +346,11 @@ df_soga_wide$name %>%
 
 ```
 
-Great! Now we see that the most frequently sold artist was a **unknown central European artist** with around 360x sold paintings.  
+Great! Now we see that the most frequently sold artist was an unknown central European artist with around 360 sold paintings.
 
-Unfortunately, the data is still not tidy. My poorly written web scraping code is responsible for this messy dataset. (I am sure there is a better R code to scape data more accurately)
+Unfortunately the data is still not tidy. My poorly written web scraping code is responsible for this messy dataset. (I am sure there is a better R code to scrape data more accurately)
 
-Now, lets tidy up columns containing the messy data. Columns are still character variables and errors prohibiting transformation into tidy are: 
+Now, lets tidy up columns containing the messy data. Columns are still character variables and errors prohibiting transformation into tidy are:
 
 * Columns with price data contains symbols currency symbol € 
 * Blank space before, after and in between the values 
@@ -445,9 +445,16 @@ df_soga_tidy <- df_soga_tidy %>%
 
 ### Part III: Analysis of the data
 
-With tidy data lets focus on analyzing the data. This part, is always a cherry on the cake after the painful process of data acquisition & cleaning. (Jenny Bryans quote: "Behind every great plot there's a great deal of wrangling") - is a accurate one. Link [here](https://www.youtube.com/watch?v=4MfUCX_KpdE)
+With tidy data lets focus on analyzing the data. Once the data has been cleaned up analysis can be performed. This part is always a cherry on the cake after the painful process of data gathering & cleaning. (Jenny Bryans quote: “Behind every great plot there’s a great deal of wrangling”) - is an accurate one. Link [here](https://www.youtube.com/watch?v=4MfUCX_KpdE)
 
-First, let's look at the highest prices paid for painting on auction:
+First, let’s look at the highest prices paid for painting on auction:
+
+```{r correct names,echo=F}
+df_soga_tidy <- df_soga_tidy %>% mutate(piece = if_else(piece == "Margaréta II., dánska kráľovná, z cyklu Vládnuce kráľovné (portfólio 4 sieťotlačí)",
+                                                        "Margaréta II",
+                                                        piece))
+```
+
 
 ```{r highest price per painting}
 df_soga_tidy %>% 
@@ -457,35 +464,33 @@ df_soga_tidy %>%
         geom_col() +
         coord_flip() + 
         labs(title = "Highest price paid per painting",
-             subtitle = "sorted by name of the artwork",
-             caption = "Source: www.soga.sk", y = "artwork") + 
+             caption = "Source: www.soga.sk", y = "Final Price in €", x = "Artwork") + 
         theme_minimal(base_family = "Verdana",base_size = 12)  + 
         scale_y_continuous(labels = scales::comma) +
         theme(legend.text  = element_text(size = 6),
                 legend.title = element_text(size = 6),legend.position = "bottom")
 ```
 
-The highest auctioned painting was for the "Chlapec s Dalmatinom" by DOMENICHINO DOMENICO ZAMPIERI. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR. 
+The highest auctioned painting was for the “Chlapec s Dalmatinom” by DOMENICHINO DOMENICO ZAMPIERI. Interestingly it failed to reach its owner price of 663 878 EUR and was sold at a loss of (-132 775 EUR or -19%) for final price of 531 103 EUR.
 
 The second chart shows paintings sold at the highest **relative** profit:
 
 ```{r highest profit per painting - relative }
 df_soga_tidy %>% 
         drop_na(diff_price_rel) %>% 
-        top_n(wt = diff_price_rel,n = 15) %>% 
+        top_n(wt = diff_price_rel,n = 10) %>% 
         ggplot(aes(reorder(piece, diff_price_rel),diff_price_rel)) +
         geom_col() +
         coord_flip() + 
         theme_minimal(base_family = "Verdana",base_size = 12) + 
         labs(title = "Highest profit generated by painting (in %)",
-             subtitle = "relative, sorted by name of the artwork",
              y = "Profit (in %)",
              x = "Artwork",
              caption = "Source: www.soga.sk") + 
         scale_y_continuous(labels = scales::percent) 
 ```
 
-Surprisingly, the highest profits were in the range of 10x - 15x fold return This is a great result for the investor. The most profitable painting was - "Zátišie s ľudovým džbánom" by KRIVOŠ RUDOLF ( [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/102-jarna-aukcia-vytvarnych-diel/krivos-rudolf-zatisie-s-ludovym-dzbanom-30005)
+Surprisingly, the highest profits were in the range of 10x - 15x fold return. This is a great result for the investor. The most profitable painting was - "Zátišie s ľudovým džbánom" by KRIVOŠ RUDOLF ( [link](http://www.soga.sk/aukcie-obrazy-diela-umenie-starozitnosti/aukcie/102-jarna-aukcia-vytvarnych-diel/krivos-rudolf-zatisie-s-ludovym-dzbanom-30005)
 ). This painting was also an outlier as rest of KRIVOŠ paintings generated far lower returns.  
 
 Another point of view is to visualize the most profitable paintings in the **absolute** terms.
@@ -493,15 +498,14 @@ Another point of view is to visualize the most profitable paintings in the **abs
 ```{r highest profit per painting - absolute,warning=F }
 df_soga_tidy %>% 
         drop_na(diff_price_abs) %>% 
-        top_n(wt = diff_price_abs,n = 15) %>% 
+        top_n(wt = diff_price_abs,n = 10) %>% 
         ggplot(aes(reorder(piece, diff_price_abs),diff_price_abs)) +
         geom_col() +
         coord_flip() + 
         theme_minimal(base_family = "Verdana",base_size = 12) + 
         labs(title = "Highest profit generated by painting (in €)",
-             subtitle = "absolute, sorted by name of the artwork",
              y = "Profit (in €)",
-             x = "Artwork",
+             x = "Painting",
              caption = "Source: www.soga.sk") + 
         scale_y_continuous(labels = scales::comma) 
 ```
@@ -520,6 +524,7 @@ library(plotly)
 pl <- plotly::plot_ly(df_loss_profit,
                 x = ~starting_price,
                 y = ~ final_price,
+                size = ~ final_price,
                 color = ~ bin_diff_price_rel,
                 text = ~paste("Name: ", name, "\n",
                               "Artwork:",piece,"\n",
@@ -527,17 +532,17 @@ pl <- plotly::plot_ly(df_loss_profit,
                               "Final Price:",scales::comma(final_price),"\n",
                               "Return (%):",scales::percent(diff_price_rel),"\n",
                               "Return (€):", scales::comma(diff_price_abs))) %>%
-  layout(title = "Profits & Losses @ SOGA Auction House",
+  layout(title = "Profits & Losses @ SOGA Auction House", 
          xaxis = list(title = "Starting Price",range = c(0, 200000)),
          yaxis = list(title = "Final Price",range = c(0, 200000)))
 
-widgetframe::frameWidget(pl,width = "95%",height = 350)
+widgetframe::frameWidget(pl,width = "100%",height = 550)
 
 ```
 
-Now it is pretty clear that the outliers where price difference (between starting and final price) was big. This means some paintings fail to meet the expectation and was traded well below the starting price. Another observation - Profits are getting smaller the more we move up the price tag. 
+After playing the the HTML widget for few minutes i have several observation. Some paintings failed to meet the expectation and were traded well below the asking price. Also important to note is that profits are getting smaller the more expensive the painting is. 
 
-Finally, let's make a summary statistics with the most profitable artist sold at the SOGA auction house. 
+Here is summary statistics with the most profitable artist sold at the SOGA auction house.
 
 ```{r best returns per artist,warning=F}
 df_soga_tidy %>% 
@@ -554,9 +559,9 @@ df_soga_tidy %>%
         knitr::kable()
 ```
 
-The table shows sorted results by the highest median relative profit. In other words - artist generating highest profits per painting is in the top. Based on this table **Ladislav Guderna** painting generated average profit of 87%. The author was tradet 7x times. Average price per painting was 4 149 EUR generating profit of 2 257 EUR. The total sum of profits generated by Guderna reached 11 284 EUR.   
+The table shows results sorted by the highest median relative profit. In other words - artist generating highest profits per painting is at the top. Based on this table Ladislav Guderna paintings generated average profit of 87%. The author was traded 7x times. Average price per painting was 4 149 EUR generating profit of 2 257 EUR. The total sum of profits generated by Guderna reached 11 284 EUR.
 
-Similiary lets generate the authors responsible for the highest **absolute** profits. 
+Similarly below are the authors generating the highest **absolute** profits.
 
 ```{r highest profit per artist,echo=F}
 df_soga_tidy %>% 
@@ -575,16 +580,42 @@ df_soga_tidy %>%
 
 Not suprisingly, **Martin Benka** paintings generated highest profit at the auctions.  [Wiki page](https://sk.wikipedia.org/wiki/Martin_Benka) 
 
-PS: The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and provide liquidity for the investor. Owning artwork of authors that are **rarely** trade is a liquidity risk for the investor and is recommended to avoid.  
+PS: The results are filtered with the condition of the artist selling at least 5 paintings trough SOGA to limit the number of records and filter out paintings that don’t generate enough liquidity. Owning artwork of authors that are rarely traded presents a risk for the investor and is recommended to avoid.
+
+Last step of this analysis is to look at the distribution of returns authors generate.
+
+```{r distribution of returns}
+df_soga_tidy %>% 
+        drop_na(final_price,diff_price_rel,diff_price_abs) %>% 
+        group_by(name,bin_price) %>% 
+        summarise(profit_relative = median(diff_price_rel, na.rm = T) ,
+                  profit_absolute = median(diff_price_abs, na.rm = T) ,
+                  artwork_price = median(final_price, na.rm = T) ,
+                  count = n(),
+                  sum = sum(diff_price_abs)) %>% 
+        filter(count > 5) %>%
+        ggplot(aes(profit_relative)) +
+        geom_histogram() + 
+        theme_minimal(base_family = "Verdana",base_size = 12) + 
+        labs(title = "Only few authors generate good profits",
+             subtitle = "Distribution of returns per artist",
+             x = "Returns (in %)",
+             caption = "Source: www.soga.sk")  +
+        scale_x_continuous(labels = scales::percent)
+        
+```
+
+
 
 ## Conclusions
 
-* Average price per painting is increasing for the past 15 years by rate of 10% per annum
-* Purchasing famous painter is not always guaranteeing for a good investment 
-* Gudena, Spannerová or Ignác artwork generated consistently the highest returns ~ 80% per painting 
+* Average price per painting has been increasing by 10% per annum over the past 15 years   
+* Purchasing famous painter does not always guarantee a good investment.  
+* Gudena, Spannerová or Ignác artwork generated consistently the highest returns ~ 80% per painting
 * Highest absolute profit was recorded by the artist Benka (ca 332.000€) followed by Ján Halla (ca 185.000€) or Ladislav Mednyánszky (174.000€)
 
 ## Known limitations
-* The analysis would be more accurate if the names of the authors were **labeled consistently** (to avoid duplicate records for one artist)
-* The **real profits** might be different to the one calculated. Owners might set the starting price artificially high.   
+* The analysis would be more accurate if the names of the authors were labeled consistently (to avoid duplicate records for the same artist) 
+* Profits are calculated based on the auction asking price, which might not reflect actual profit for the owner 
+
 

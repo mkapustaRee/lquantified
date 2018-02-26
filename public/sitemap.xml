@@ -6,7 +6,7 @@
     <url>
     
       <loc>/post/investing_in_art/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
     </url>
     
   
@@ -31,6 +31,16 @@
     
     <url>
     
+      <loc>/tags/art/</loc>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/categories/</loc>
       <priority>0</priority>
     </url>
@@ -41,7 +51,7 @@
     <url>
     
       <loc>/tags/investment/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -60,6 +70,16 @@
     
     <url>
     
+      <loc>/tags/plotly/</loc>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication_types/</loc>
       <priority>0</priority>
     </url>
@@ -70,7 +90,7 @@
     <url>
     
       <loc>/tags/purrr/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -80,7 +100,7 @@
     <url>
     
       <loc>/categories/r/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -90,7 +110,7 @@
     <url>
     
       <loc>/tags/rvest/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -100,7 +120,7 @@
     <url>
     
       <loc>/tags/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -110,7 +130,7 @@
     <url>
     
       <loc>/tags/webscraping/</loc>
-      <lastmod>2018-02-25T00:00:00+00:00</lastmod>
+      <lastmod>2018-02-26T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
